@@ -55,6 +55,7 @@ export const roles: Role[] = [
       'Developed internal mobile testing tools using Java and Kotlin.',
       'Worked closely with engineering, game design, art and support teams to drive issue resolution and maintain release quality.',
     ],
+    note: 'Live mobile titles on Google Play.',
   },
   {
     id: 'freelance',
@@ -73,7 +74,7 @@ export const roles: Role[] = [
       'Executed manual regression and sanity testing to detect defects, verify fixes, and maintain release stability.',
       'Collaborated with design teams to help ensure a smooth, intuitive, and high-quality user experience.',
     ],
-    note: 'Notable projects available on Steam.',
+    note: 'Released titles on Steam and itch.io.',
   },
   // ---------------------------------------------------------------------
   // TEMPLATE ENTRY — placeholder text, meant to be filled in.

@@ -8,7 +8,7 @@
  */
 import { site, portrait } from '../data/site';
 import { yearsExperience } from '../data/experience';
-import { projects } from '../data/projects';
+import { projects, platforms } from '../data/projects';
 import { url } from '../lib/url';
 
 /* Values are kept to short numerals so the row stays inside the copy column and
@@ -16,8 +16,8 @@ import { url } from '../lib/url';
    on gold becomes unreadable. */
 const stats = [
   { value: `${yearsExperience}+`, label: 'Years in QA & engineering' },
-  { value: String(projects.length), label: 'Titles shipped on Steam' },
-  { value: '3', label: 'Platforms — iOS, Android, PC' },
+  { value: String(projects.length), label: 'Titles shipped' },
+  { value: String(platforms.length), label: `Stores — ${platforms.join(', ')}` },
 ];
 ---
 
@@ -101,7 +101,7 @@ const stats = [
       </span>
       <span class="float-chip float-chip--b">
         <strong>{projects.length} titles</strong>
-        <span>shipped on Steam</span>
+        <span>shipped &amp; live</span>
       </span>
     </div>
   </div>

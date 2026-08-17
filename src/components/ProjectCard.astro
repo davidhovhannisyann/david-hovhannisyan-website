@@ -1,7 +1,9 @@
 ---
 /**
- * A shipped Steam title: store capsule art, blurb, genre chips and a link out
- * to the store page. Cover art and metadata come from the Steam storefront API.
+ * A shipped title. Handles two kinds of store art:
+ *   banner — wide key art (Steam capsules, itch covers), filling the card head
+ *   icon   — a square app icon, centred on a tinted panel so it isn't cropped
+ * Both occupy the same 460×215 box, so mixed rows stay on a tidy grid.
  */
 import type { Project } from '../data/projects';
 import { url } from '../lib/url';
@@ -12,40 +14,57 @@ interface Props {
 }
 
 const { project, delay = 0 } = Astro.props;
+const { name, platform, storeUrl, developer, releaseDate, genres, blurb, art, credit } = project;
+
+const isIcon = art.type === 'icon';
 ---
 
 <article class="proj card card--hoverable" data-reveal style={`--reveal-delay:${delay}ms`}>
-  <div class="proj__cover">
+  <div class:list={['proj__cover', isIcon && 'proj__cover--icon']}>
+    {isIcon && <span class="proj__texture dots dots--ink" aria-hidden="true" />}
     <img
-      src={url(project.cover)}
-      alt={`${project.name} store artwork`}
+      class:list={['proj__art', isIcon && 'proj__art--icon']}
+      src={url(art.src)}
+      alt={`${name} store artwork`}
       loading="lazy"
       decoding="async"
-      width="460"
-      height="215"
+      width={isIcon ? 320 : 460}
+      height={isIcon ? 320 : 215}
     />
-    <span class="proj__platform">Steam</span>
+    <span class="proj__platform">{platform}</span>
   </div>
 
   <div class="proj__body">
     <h3 class="proj__name">
-      <a class="proj__link" href={project.storeUrl} target="_blank" rel="noopener noreferrer">
-        {project.name}
+      <a class="proj__link" href={storeUrl} target="_blank" rel="noopener noreferrer">
+        {name}
       </a>
     </h3>
 
     <p class="proj__dev">
-      by {project.developer} · {project.releaseDate}
+      by {developer}{releaseDate && ` · ${releaseDate}`}
     </p>
 
-    <p class="proj__blurb">{project.blurb}</p>
+    <p class="proj__blurb">{blurb}</p>
 
     <ul class="chip-row proj__genres">
-      {project.genres.map((genre) => <li class="chip">{genre}</li>)}
+      {genres.map((genre) => <li class="chip">{genre}</li>)}
     </ul>
 
+    {
+      credit && (
+        /* Sits above the stretched card link so it stays independently clickable. */
+        <a class="proj__credit" href={credit.href} target="_blank" rel="noopener noreferrer">
+          {credit.label}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+        </a>
+      )
+    }
+
     <p class="proj__cta" aria-hidden="true">
-      View on Steam
+      View on {platform}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M7 17 17 7M9 7h8v8"></path>
       </svg>
@@ -62,20 +81,52 @@ const { project, delay = 0 } = Astro.props;
   .proj__cover {
     position: relative;
     overflow: hidden;
-    /* Matches the 460×215 Steam capsule, so nothing is cropped. */
+    /* Matches the Steam capsule ratio; icon cards reuse it so rows stay level. */
     aspect-ratio: 460 / 215;
     background: var(--c-paper);
   }
 
-  .proj__cover img {
+  .proj__art {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
     transition: transform 500ms var(--ease-out);
   }
 
-  .proj:hover .proj__cover img {
+  .proj:hover .proj__art {
     transform: scale(1.04);
+  }
+
+  /* ---- square app icons ------------------------------------------------ */
+  .proj__cover--icon {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(
+      135deg,
+      var(--c-paper),
+      color-mix(in srgb, var(--accent) 14%, var(--c-paper))
+    );
+  }
+
+  .proj__texture {
+    position: absolute;
+    inset: 0;
+    --dot-color: color-mix(in srgb, var(--accent) 22%, transparent);
+    --dot-gap: 14px;
+  }
+
+  /* Sized from the cover's WIDTH, not its height: the cover gets its height
+     from aspect-ratio, which leaves the containing block's height indefinite,
+     so a percentage block-size would resolve against the image's own intrinsic
+     height and overflow. The cover is 460:215, so 34% of its width lands the
+     icon at ~73% of its height. */
+  .proj__art--icon {
+    inline-size: 34%;
+    block-size: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 22%;
+    box-shadow: var(--shadow-md);
   }
 
   .proj__platform {
@@ -91,6 +142,7 @@ const { project, delay = 0 } = Astro.props;
     text-transform: uppercase;
   }
 
+  /* ---- body ------------------------------------------------------------ */
   .proj__body {
     display: flex;
     flex-direction: column;
@@ -132,6 +184,27 @@ const { project, delay = 0 } = Astro.props;
   .proj__genres {
     margin-block-start: auto;
     padding-block-start: var(--space-sm);
+  }
+
+  .proj__credit {
+    position: relative;
+    z-index: 1;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-block-start: var(--space-sm);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--c-muted);
+    border-block-end: 1px solid var(--c-line);
+    padding-block-end: 2px;
+    transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+  }
+
+  .proj__credit:hover {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   .proj__cta {

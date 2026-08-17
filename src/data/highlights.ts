@@ -37,7 +37,7 @@ export const highlights: Highlight[] = [
     body:
       'Owning release quality across Android and iOS — test design in TestRail, API testing, ' +
       'Selenium automation in Java, and crash/ANR monitoring in Firebase and Play Console.',
-    meta: [currentRole.period, `${projects.length} shipped Steam titles`],
+    meta: [currentRole.period, `${projects.length} shipped titles`],
     comingSoon: false,
     cta: 'See the full history',
   },

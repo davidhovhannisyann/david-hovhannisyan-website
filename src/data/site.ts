@@ -45,8 +45,10 @@ export const portrait: string | null = null;
 export const links = {
   linkedin: {
     label: 'LinkedIn',
-    handle: 'david-hovhannisyan',
-    href: 'https://www.linkedin.com/in/david-hovhannisyan',
+    /** Shown in the UI — the real URL slug has a long numeric suffix that reads
+     *  as noise, so the name is displayed instead. */
+    display: 'David Hovhannisyan',
+    href: 'https://www.linkedin.com/in/david-hovhannisyan-91635829a/',
   },
 } as const;
 
