@@ -45,14 +45,14 @@ export const highlights: Highlight[] = [
     accent: 'creative',
     section: 'Creative',
     href: '/creative',
-    kicker: 'In progress',
-    headline: 'Video editing work, coming soon',
+    kicker: 'Also doing',
+    headline: 'Video editing for game marketing',
     body:
-      'Cuts, edits and motion work built in Premiere Pro and Photoshop. ' +
-      'The reel is being put together — check back shortly.',
-    meta: ['Adobe Premiere Pro', 'Adobe Photoshop'],
-    comingSoon: true,
-    cta: 'Take a look',
+      '250+ mobile ad creatives and 50+ social videos for Melon Sandbox, a title with ' +
+      'over 100M downloads — concepts, gameplay capture, hooks, voiceovers and platform cuts.',
+    meta: ['250+ creatives', 'Premiere Pro'],
+    comingSoon: false,
+    cta: 'See the work',
   },
   {
     accent: 'development',

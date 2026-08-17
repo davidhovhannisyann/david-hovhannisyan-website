@@ -24,9 +24,9 @@ export interface Role {
   /** Alt text for the logo. */
   logoAlt?: string;
   /** Which page this role belongs to. */
-  page: 'qa' | 'development';
+  page: 'qa' | 'development' | 'creative';
   /** Discipline badge shown on the card. */
-  discipline: 'Quality Assurance' | 'Software Engineering';
+  discipline: 'Quality Assurance' | 'Software Engineering' | 'Video Editing';
   bullets: string[];
   /** Optional trailing note rendered below the bullets. */
   note?: string;
@@ -76,6 +76,31 @@ export const roles: Role[] = [
     ],
     note: 'Released titles on Steam and itch.io.',
   },
+  {
+    id: 'ducky',
+    company: 'Ducky LTD',
+    title: 'Video Editor',
+    // No calendar dates were given for this contract, so the visible period
+    // states its length instead. Replace with real dates when you have them.
+    period: '3–4 month contract',
+    // Sort key only — never rendered. It sits after Ngene so it doesn't affect
+    // the "years of experience" figure, which counts from the earliest role.
+    start: '2025-01',
+    location: 'Remote',
+    current: false,
+    logo: null,
+    page: 'creative',
+    discipline: 'Video Editing',
+    bullets: [
+      'Created 250+ mobile game ad creatives for Melon Sandbox — a title with over 100M downloads — across multiple advertising platforms.',
+      'Developed concepts, recorded gameplay footage and edited end to end: hooks, voiceovers, subtitles, music, sound effects and ending cards.',
+      'Adapted every creative to the format requirements of each advertising platform.',
+      "Produced 50+ videos for the game's TikTok and Instagram channels.",
+      'Worked closely with the marketing team on new creative directions, campaign requirements and a high volume of platform-ready output.',
+    ],
+    note: 'Melon Sandbox — 100M+ downloads on Google Play.',
+  },
+
   // ---------------------------------------------------------------------
   // TEMPLATE ENTRY — placeholder text, meant to be filled in.
   // Replace `title`, `period`, `start`, `location` and every bullet below.

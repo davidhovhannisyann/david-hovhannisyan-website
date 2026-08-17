@@ -499,6 +499,12 @@ h4 {
   gap: clamp(1.25rem, 1rem + 1.4vw, 2rem);
 }
 
+/* With a single entry the rail connects nothing and reads as a stray line —
+   the node on its own is enough. */
+.timeline:not(:has(> li:nth-child(2)))::before {
+  display: none;
+}
+
 .timeline::before {
   content: '';
   position: absolute;

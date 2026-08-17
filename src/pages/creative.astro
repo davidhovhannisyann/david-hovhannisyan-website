@@ -1,31 +1,196 @@
 ---
-/** Creative page — video editing and design work. Placeholder until the reel exists. */
+/**
+ * Creative page: video editing experience, the Melon Sandbox campaign it came
+ * from, and a placeholder for the showreel that doesn't exist yet.
+ */
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
+import RoleCard from '../components/RoleCard.astro';
 import ComingSoon from '../components/ComingSoon.astro';
+import { rolesFor } from '../data/experience';
+import { url } from '../lib/url';
+
+const timeline = rolesFor('creative');
+
+/** Headline figures from the Melon Sandbox campaign. */
+const featured = {
+  name: 'Melon Sandbox',
+  developer: 'Studio 27',
+  icon: '/images/games/melon-sandbox-icon.png',
+  storeUrl: 'https://play.google.com/store/apps/details?id=com.studio27.MelonPlayground',
+  stats: [
+    { value: '250+', label: 'Ad creatives produced' },
+    { value: '50+', label: 'TikTok & Instagram videos' },
+    { value: '100M+', label: 'Downloads on the title' },
+  ],
+  categories: ['Video Ads & Commercials', 'Video Editing', 'Game Trailers', 'Game Development'],
+};
 ---
 
 <Base
   title="Creative"
   accent="creative"
-  description="Video editing and design work by David Hovhannisyan — coming soon."
+  description="Video editing work by David Hovhannisyan — 250+ mobile game ad creatives and 50+ social videos for Melon Sandbox, a title with over 100M downloads."
 >
   <PageHeader
     eyebrow="Creative"
     title="Cuts, edits<br />and everything after"
-    lead="The other half of the work: video editing, motion and design. This section is still being put together."
-    meta={['Premiere Pro', 'Photoshop', 'In progress']}
+    lead="Video editing for mobile game marketing — concepts, gameplay capture, hooks, voiceovers and platform-ready ad creatives at volume."
+    meta={['Premiere Pro', 'Photoshop', '250+ creatives shipped']}
   />
+
+  <!-- Experience -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Experience</p>
+        <h2 class="h2">Where I've edited</h2>
+      </div>
+
+      <ol class="timeline">
+        {timeline.map((role, i) => <RoleCard role={role} delay={i * 90} />)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Featured campaign -->
+  <section class="section section--paper">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Featured campaign</p>
+        <h2 class="h2">Melon<br /><span class="text-gradient">Sandbox</span></h2>
+        <p class="lead">
+          A physics sandbox game with over 100 million downloads. I handled the ad
+          creative pipeline end to end — from concept and gameplay capture through
+          to the finished, platform-formatted cut.
+        </p>
+      </div>
+
+      <div class="feature card" data-reveal>
+        <div class="feature__identity">
+          <img
+            class="feature__icon"
+            src={url(featured.icon)}
+            alt={`${featured.name} app icon`}
+            loading="lazy"
+            decoding="async"
+            width="320"
+            height="320"
+          />
+          <div>
+            <h3 class="feature__name">{featured.name}</h3>
+            <p class="feature__dev">by {featured.developer} · Google Play</p>
+            <a
+              class="link-underline feature__link"
+              href={featured.storeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on Google Play
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M7 17 17 7M9 7h8v8"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <dl class="feature__stats">
+          {
+            featured.stats.map((stat) => (
+              <div>
+                <dt class="feature__value">{stat.value}</dt>
+                <dd class="feature__label">{stat.label}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <ul class="chip-row feature__cats">
+          {featured.categories.map((cat) => <li class="chip chip--accent">{cat}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
 
   <ComingSoon
     heading="The reel is still rendering"
-    blurb="Editing work has been a constant alongside QA, but none of it is written up yet. This page will hold the finished pieces rather than a list of promises."
+    blurb="The work above covers the campaign. A cut-down showreel and breakdowns of individual pieces are still being put together."
     planned={[
-      'A short showreel of edited pieces',
-      'Selected projects with the brief, the approach and the result',
+      'A short showreel of selected ad creatives',
+      'Before-and-after breakdowns of specific edits',
+      'Social-first vertical cuts for TikTok and Instagram',
       'Thumbnail and graphic design work made in Photoshop',
-      'Breakdowns of how specific edits were put together',
     ]}
     tools={['Adobe Premiere Pro', 'Adobe Photoshop']}
   />
 </Base>
+
+<style>
+  .feature {
+    gap: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+    padding: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  }
+
+  .feature__identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .feature__icon {
+    flex: none;
+    inline-size: clamp(4rem, 3rem + 4vw, 5.5rem);
+    aspect-ratio: 1;
+    border-radius: 22%;
+    box-shadow: var(--shadow-md);
+  }
+
+  .feature__name {
+    font-size: var(--fs-h2);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .feature__dev {
+    margin-block: 0.35rem 0.5rem;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .feature__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--fs-sm);
+    color: var(--accent);
+  }
+
+  .feature__stats {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    padding-block: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    border-block: 1px solid var(--c-line);
+  }
+
+  .feature__value {
+    font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+  }
+
+  .feature__label {
+    margin: 0.4rem 0 0;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+</style>
