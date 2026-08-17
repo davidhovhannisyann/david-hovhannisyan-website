@@ -46,7 +46,7 @@ export const projects: Project[] = [
     genres: ['Simulation', 'Idle', 'Casual'],
     blurb:
       'Idle business simulator and tycoon game with a post-apocalyptic theme — build your outpost, trade with survivors and expand.',
-    art: { type: 'icon', src: '/images/games/idle-outpost-icon.png' },
+    art: { type: 'banner', src: '/images/games/idle-outpost-cover.webp' },
     via: 'rockbite',
   },
   {
@@ -58,7 +58,7 @@ export const projects: Project[] = [
     genres: ['Simulation', 'Idle'],
     blurb:
       'Build, trade and survive in a world overrun by zombies — run a trading outpost, establish routes and grow the business.',
-    art: { type: 'icon', src: '/images/games/wasteland-trade-icon.png' },
+    art: { type: 'banner', src: '/images/games/wasteland-trade-cover.webp' },
     via: 'rockbite',
   },
   {
@@ -70,7 +70,7 @@ export const projects: Project[] = [
     genres: ['Simulation', 'City Builder'],
     blurb:
       'A relaxing post-apocalyptic city builder — restore polluted land, rebuild settlements and bring life back to a ruined world.',
-    art: { type: 'icon', src: '/images/games/repopulation-icon.png' },
+    art: { type: 'banner', src: '/images/games/repopulation-cover.webp' },
     via: 'rockbite',
   },
   {
@@ -82,7 +82,7 @@ export const projects: Project[] = [
     genres: ['Action', 'Arcade'],
     blurb:
       'A fast-paced arcade adventure where every second matters — gather resources and reach the portal before time runs out.',
-    art: { type: 'icon', src: '/images/games/root-rush-icon.png' },
+    art: { type: 'banner', src: '/images/games/root-rush-cover.webp' },
     via: 'rockbite',
   },
 

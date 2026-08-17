@@ -26,3 +26,6 @@ pnpm-debug.log*
 .idea/
 *.swp
 CV/
+
+# Original artwork the optimised covers are derived from (kept local)
+art-source/
