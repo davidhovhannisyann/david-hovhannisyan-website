@@ -332,10 +332,17 @@ h4 {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
 }
 
-/* Narrower minimum so short cards (skills, toolkit) pack more per row
-   instead of leaving a stranded item alone on a final row. */
+/* Narrower minimum so short cards pack more per row instead of leaving a
+   stranded item alone on a final row. Four-up at desktop widths, stepping
+   down to three and two on its own — used by the shipped-titles grid, which
+   only grows.
+
+   15.5rem, not 14.5: the minimum here IS the card width right at each
+   step-down, and below ~15.5rem a three-genre tag row no longer fits on the
+   one line the card guarantees it. The cost is that four-up gives way to
+   three at ~1150px instead of ~1100px. */
 .grid-cards--tight {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
 }
 
 /* Section heading block: label + title + optional description */

@@ -1,6 +1,18 @@
 ---
 /**
- * A shipped title. Handles two kinds of store art:
+ * A shipped title.
+ *
+ * Deliberately short. The card itself is the store link, so there is no
+ * "view on…" footer row, and the store blurb stays in the data rather than
+ * being rendered — a paragraph each turned eleven titles into 2000px of grid,
+ * and the list only grows. What's left is what identifies a title: art, name,
+ * platform, developer, release date and genre.
+ *
+ * That makes the card a fixed five bands tall, whatever the title: art, name,
+ * meta, genre row. Anything that would add a sixth belongs somewhere else on
+ * the page, not squeezed in here — see `credit` in src/data/projects.ts.
+ *
+ * Handles two kinds of store art:
  *   banner — wide key art (Steam capsules, itch covers), filling the card head
  *   icon   — a square app icon, centred on a tinted panel so it isn't cropped
  * Both occupy the same 460×215 box, so mixed rows stay on a tidy grid.
@@ -14,9 +26,20 @@ interface Props {
 }
 
 const { project, delay = 0 } = Astro.props;
-const { name, platform, storeUrl, developer, releaseDate, genres, blurb, art, credit } = project;
+const { name, platform, storeUrl, developer, releaseDate, genres, art } = project;
 
 const isIcon = art.type === 'icon';
+
+/**
+ * Genres rendered per card. The row is one line by construction, so a fourth
+ * chip doesn't wrap — it makes flex shrink every chip in the row, and short
+ * ones like "Indie" come out as "Indi…" alongside the long ones. Three is what
+ * fits whole at the narrowest four-column card. Every title currently has at
+ * most three, so this only bounds the future; raise it and the row still holds
+ * one line, it just starts truncating.
+ */
+const MAX_GENRES = 3;
+const shownGenres = genres.slice(0, MAX_GENRES);
 ---
 
 <article class="proj card card--hoverable" data-reveal style={`--reveal-delay:${delay}ms`}>
@@ -42,33 +65,15 @@ const isIcon = art.type === 'icon';
     </h3>
 
     <p class="proj__dev">
-      by {developer}{releaseDate && ` · ${releaseDate}`}
+      {developer}{releaseDate && ` · ${releaseDate}`}
     </p>
 
-    <p class="proj__blurb">{blurb}</p>
-
+    {/* Genres only. Nothing interactive goes in here — a link inside a row of
+        labels reads as another label, and it was the one thing that could push
+        the row onto a second line. */}
     <ul class="chip-row proj__genres">
-      {genres.map((genre) => <li class="chip">{genre}</li>)}
+      {shownGenres.map((genre) => <li class="chip">{genre}</li>)}
     </ul>
-
-    {
-      credit && (
-        /* Sits above the stretched card link so it stays independently clickable. */
-        <a class="proj__credit" href={credit.href} target="_blank" rel="noopener noreferrer">
-          {credit.label}
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M7 17 17 7M9 7h8v8" />
-          </svg>
-        </a>
-      )
-    }
-
-    <p class="proj__cta" aria-hidden="true">
-      View on {platform}
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M7 17 17 7M9 7h8v8"></path>
-      </svg>
-    </p>
   </div>
 </article>
 
@@ -94,7 +99,7 @@ const isIcon = art.type === 'icon';
   }
 
   .proj:hover .proj__art {
-    transform: scale(1.04);
+    transform: scale(1.05);
   }
 
   /* ---- square app icons ------------------------------------------------ */
@@ -131,14 +136,14 @@ const isIcon = art.type === 'icon';
 
   .proj__platform {
     position: absolute;
-    inset-block-start: 0.6rem;
-    inset-inline-start: 0.6rem;
-    padding: 0.25rem 0.6rem;
+    inset-block-start: 0.4rem;
+    inset-inline-start: 0.4rem;
+    padding: 0.15rem 0.45rem;
     background: rgb(20 20 20 / 82%);
     color: var(--c-white);
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 800;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
@@ -147,12 +152,12 @@ const isIcon = art.type === 'icon';
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: var(--space-xs);
-    padding: clamp(1.1rem, 0.9rem + 0.8vw, 1.6rem);
+    gap: 0.2rem;
+    padding: 0.75rem 0.85rem 0.85rem;
   }
 
   .proj__name {
-    font-size: var(--fs-h3);
+    font-size: 0.95rem;
     line-height: 1.2;
   }
 
@@ -167,65 +172,40 @@ const isIcon = art.type === 'icon';
   }
 
   .proj__dev {
-    font-size: var(--fs-xs);
+    font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--c-muted);
   }
 
-  .proj__blurb {
-    margin-block-start: var(--space-2xs);
-    font-size: var(--fs-sm);
-    line-height: 1.6;
-    color: var(--c-muted);
-  }
+  /* Pinned to the bottom so names of one and two lines still leave the genre
+     row level across a grid row.
 
+     `nowrap` is the rule, not a hope: the row is exactly one line tall for any
+     genre list, so no card can grow a second band and drag its whole grid row
+     up in height with it. */
   .proj__genres {
     margin-block-start: auto;
-    padding-block-start: var(--space-sm);
+    padding-block-start: 0.5rem;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
   }
 
-  .proj__credit {
-    position: relative;
-    z-index: 1;
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-block-start: var(--space-sm);
-    font-size: var(--fs-xs);
-    font-weight: 700;
-    color: var(--c-muted);
-    border-block-end: 1px solid var(--c-line);
-    padding-block-end: 2px;
-    transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
-  }
-
-  .proj__credit:hover {
-    color: var(--accent-text);
-    border-color: var(--accent);
-  }
-
-  .proj__cta {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-block-start: var(--space-sm);
-    padding-block-start: var(--space-sm);
-    border-block-start: 1px solid var(--c-line);
-    font-size: var(--fs-xs);
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-text);
-  }
-
-  .proj__cta svg {
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .proj:hover .proj__cta svg {
-    transform: translate(3px, -3px);
+  /* Small enough that three genres fit a narrow card outright. Past that, the
+     chips give way rather than the row: `min-inline-size: 0` lets a flex item
+     shrink below its text (the default `auto` would refuse and overflow), and
+     the ellipsis makes the squeeze look deliberate. Nothing is dropped from
+     the markup — only the rendering gives ground. */
+  .proj__genres .chip {
+    display: block;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* The inline padding is trimmed past what the shape needs: at 320px the
+       card is at its narrowest and three chips cleared the row by only 3px,
+       which a fallback font mid-load could swallow. This buys ~8px. */
+    padding: 0.12rem 0.4rem;
+    font-size: 0.66rem;
   }
 </style>

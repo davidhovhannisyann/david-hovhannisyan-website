@@ -22,6 +22,12 @@ export interface Project {
   /** Omitted where the store doesn't publish a firm date. */
   releaseDate?: string;
   genres: string[];
+  /**
+   * Store description. Not rendered — the card was trimmed to the identifying
+   * facts so the grid stays compact as the list grows. Kept because it's real
+   * storefront copy that would be tedious to gather again, and it's what a
+   * per-title page would open with.
+   */
   blurb: string;
   /**
    * Store artwork. `banner` is wide key art (Steam capsules, itch covers) and
@@ -31,7 +37,12 @@ export interface Project {
   art: { type: 'banner' | 'icon'; src: string };
   /** Provenance only — not currently shown on the page. */
   via: Via;
-  /** Optional second link, e.g. a devlog that credits the team. */
+  /**
+   * Optional second link, e.g. a devlog that credits the team. Not rendered:
+   * the card is one store link and four bands of text, and a second link had
+   * nowhere to sit that didn't make that card taller than its neighbours.
+   * Kept for a per-title page, or a credits line under the grid.
+   */
   credit?: { label: string; href: string };
 }
 

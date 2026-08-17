@@ -59,11 +59,11 @@ const timeline = rolesFor('qa');
         </p>
       </div>
 
-      <div class="grid-cards grid-cards--wide">
+      <div class="grid-cards grid-cards--tight">
         {
           orderedProjects.map((project, i) => (
             /* Stagger resets every row so later cards don't wait on a long chain. */
-            <ProjectCard project={project} delay={(i % 3) * 70} />
+            <ProjectCard project={project} delay={(i % 4) * 70} />
           ))
         }
       </div>
