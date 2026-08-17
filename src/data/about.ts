@@ -11,7 +11,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'Programming & Automation',
     icon: 'code',
-    items: ['Java', 'C++', 'Kotlin (basic)', 'Selenium WebDriver'],
+    items: ['Java', 'C++', 'Kotlin (basic)', 'Selenium WebDriver', 'LabVIEW'],
   },
   {
     label: 'Test Management',
@@ -36,7 +36,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'Version Control',
     icon: 'branch',
-    items: ['GitHub'],
+    items: ['GitHub', 'GitLab'],
   },
   {
     label: 'Project Management & Issue Tracking',

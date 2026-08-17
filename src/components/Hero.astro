@@ -6,7 +6,7 @@
  * The frame is the photo slot — set `portrait` in src/data/site.ts and the
  * abstract panel is replaced by the image with no other changes needed.
  */
-import { site, portrait, heroArt } from '../data/site';
+import { site, portrait, avatar } from '../data/site';
 import { yearsExperience } from '../data/experience';
 import { projects, platforms } from '../data/projects';
 import { url } from '../lib/url';
@@ -73,8 +73,8 @@ const stats = [
       </dl>
     </div>
 
-    <div class="hero__art" aria-hidden={portrait || heroArt ? undefined : 'true'}>
-      <div class="frame">
+    <div class="hero__art" aria-hidden={portrait || avatar ? undefined : 'true'}>
+      <div class:list={['frame', !portrait && avatar && 'frame--bare']}>
         {
           portrait ? (
             /* A real photo fills the frame. */
@@ -85,19 +85,16 @@ const stats = [
               width="900"
               height="1125"
             />
-          ) : heroArt ? (
-            /* Illustration: kept whole and centred on the panel, since it's a
-               transparent cut-out — cropping it to fill would clip the figure. */
-            <div class="frame__placeholder">
-              <span class="frame__dots dots" />
-              <img
-                class="frame__art"
-                src={url(heroArt)}
-                alt={`Illustrated avatar of ${site.name}`}
-                width="450"
-                height="612"
-              />
-            </div>
+          ) : avatar ? (
+            /* Illustration: a transparent cut-out, so it sits straight on the
+               hero gradient with no panel, border or backdrop behind it. */
+            <img
+              class="frame__art"
+              src={url(avatar)}
+              alt={`Illustrated avatar of ${site.name}`}
+              width="450"
+              height="612"
+            />
           ) : (
             /* Fallback panel when neither is set. */
             <div class="frame__placeholder">
@@ -298,6 +295,17 @@ const stats = [
     transform: rotate(0deg);
   }
 
+  /* The cut-out illustration needs no card around it — strip the frame's
+     border, fill and shadow so only the figure shows. The tilt stays: it's
+     inherited from `.frame`, so the avatar keeps the same lean and the
+     straighten-on-hover motion the panel had. */
+  .frame--bare {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
   .frame__photo {
     inline-size: 100%;
     block-size: 100%;
@@ -328,20 +336,15 @@ const stats = [
      `place-content: center`, which sizes its grid track to its CONTENT, so a
      percentage max-inline-size on the image would resolve against a box that
      depends on the image itself and collapse. Insets give it a definite box. */
+  /* Fills the frame's 4:5 slot; `contain` keeps the figure's own proportions,
+     so the leftover space is simply empty — there's no panel to show through.
+     Sized explicitly because `auto` on a replaced element means its intrinsic
+     size, which would overflow the slot. */
   .frame__art {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%);
-    /* Percentages resolve against the placeholder's padding box, which has a
-       definite size (the frame sets aspect-ratio), so these are reliable —
-       unlike a percentage on a grid item under `place-content: center`.
-       Explicit sizes are required because `auto` on a replaced element means
-       its intrinsic size, which would overflow the panel. */
-    inline-size: 82%;
-    block-size: 88%;
+    inline-size: 100%;
+    block-size: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 12px 24px rgb(20 20 20 / 35%));
+    filter: drop-shadow(0 14px 28px rgb(20 20 20 / 32%));
   }
 
   .frame__monogram {

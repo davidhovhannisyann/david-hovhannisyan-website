@@ -33,13 +33,14 @@ export const site = {
 } as const;
 
 /**
- * LANDING HERO ART — the illustration shown in the hero frame.
+ * AVATAR — the illustrated portrait, used by the landing hero and the About
+ * page intro.
  *
- * Rendered centred on the gradient panel with object-fit: contain, so a
- * transparent cut-out sits on the backdrop instead of being cropped to fill it.
- * Set to `null` to fall back to the monogram panel.
+ * It's a transparent cut-out, so both places render it with no panel, border or
+ * backdrop behind it — just the figure on whatever is underneath.
+ * Set to `null` to fall back to the monogram placeholder in both places.
  */
-export const heroArt: string | null = '/images/art/dav-io-style.png';
+export const avatar: string | null = '/images/art/dav-io-style.png';
 
 /**
  * PHOTO SLOT — a real photograph, used on the About page, and taking

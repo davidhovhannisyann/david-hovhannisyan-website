@@ -9,6 +9,7 @@ import { url } from '../lib/url';
 
 const worked = [
   { name: 'Rockbite Games', logo: '/images/logos/rockbite.png', href: 'https://rockbitegames.com' },
+  { name: 'Ducky LTD', logo: '/images/logos/ducky.png', href: null },
   { name: 'Fiverr', logo: '/images/logos/fiverr.png', href: 'https://www.fiverr.com' },
   { name: 'Ngene', logo: '/images/logos/ngene.png', href: 'https://www.ngene.co' },
 ];
@@ -23,26 +24,37 @@ const worked = [
       <p class="worked__label">Worked at</p>
       <ul class="worked__list">
         {
-          worked.map((item) => (
-            <li>
-              <a
-                class="worked__item"
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={item.name}
-              >
-                <img
-                  src={url(item.logo)}
-                  alt={`${item.name} logo`}
-                  loading="lazy"
-                  decoding="async"
-                  width="180"
-                  height="70"
-                />
-              </a>
-            </li>
-          ))
+          worked.map((item) => {
+            const logo = (
+              <img
+                src={url(item.logo)}
+                alt={`${item.name} logo`}
+                loading="lazy"
+                decoding="async"
+                width="180"
+                height="70"
+              />
+            );
+            return (
+              <li>
+                {/* Not every company here has a site to point at — those render
+                    as a plain tile rather than a dead link. */}
+                {item.href ? (
+                  <a
+                    class="worked__item"
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.name}
+                  >
+                    {logo}
+                  </a>
+                ) : (
+                  <span class="worked__item worked__item--static">{logo}</span>
+                )}
+              </li>
+            );
+          })
         }
       </ul>
     </div>
@@ -111,9 +123,21 @@ const worked = [
     transform: translateY(-2px);
   }
 
+  /* Constrained on BOTH axes, not just height.
+     These logos aren't the same shape — Rockbite is a compact 2.2:1 mark while
+     Ngene is a 5.1:1 lockup with a tagline. Matching them on height alone made
+     Ngene render ~2.5x wider than the others and dominate the row. Capping the
+     width too lets each logo shrink on whichever axis binds first, so they take
+     up comparable space. */
   .worked__item img {
-    block-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    max-inline-size: clamp(5.5rem, 4rem + 5vw, 8rem);
+    max-block-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
     inline-size: auto;
+    block-size: auto;
     object-fit: contain;
+  }
+
+  .worked__item--static {
+    cursor: default;
   }
 </style>
