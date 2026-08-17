@@ -36,9 +36,13 @@
   --c-line: #d6d6d6;
   --c-muted: #6b6869;
 
-  /* Signature gradient */
+  /* Signature gradient — still used for accents (skill tiles, contact bands). */
   --grad-brand: linear-gradient(90deg, var(--c-blue) 0%, var(--c-purple) 100%);
   --grad-brand-diag: linear-gradient(135deg, var(--c-blue) 0%, var(--c-purple) 100%);
+
+  /* Dark backdrop used by the hero, the inner-page headers and the footer:
+     black on the right easing to a deep violet on the left. */
+  --grad-night: linear-gradient(to left, #000000 0%, #1b0b30 100%);
 
   /* Per-section accents. Each page sets --accent on <body>. */
   --accent: var(--c-gold);

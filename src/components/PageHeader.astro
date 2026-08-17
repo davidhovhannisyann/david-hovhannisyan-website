@@ -1,8 +1,14 @@
 ---
 /**
- * Gradient header band for the inner pages. Shorter than the landing hero but
- * built from the same parts, so the fixed nav always starts over colour.
+ * Header band for the inner pages. Same treatment as the landing hero — dark
+ * gradient with the arc graphic bottom-left — but shorter, so the fixed nav
+ * always starts over colour.
+ *
+ * The arc is absolutely positioned and clipped, so adding it does not change
+ * this band's height.
  */
+import ArcLines from './ArcLines.astro';
+
 interface Props {
   eyebrow: string;
   title: string;
@@ -16,8 +22,15 @@ const { eyebrow, title, lead, meta = [] } = Astro.props;
 
 <section class="page-header">
   <div class="page-header__bg" aria-hidden="true"></div>
-  <div class="page-header__dots dots" aria-hidden="true"></div>
-  <span class="ribbon page-header__ribbon" aria-hidden="true"></span>
+  {/* Taller and pushed further left than the hero's: this band is about half
+      the height, so the graphic needs more overshoot to read at the same scale. */}
+  <ArcLines
+    height="200%"
+    shift="-50%"
+    heightSm="150%"
+    shiftSm="-58%"
+    opacitySm="0.4"
+  />
 
   <div class="container page-header__inner">
     <p class="eyebrow eyebrow--light">{eyebrow}</p>
@@ -49,31 +62,7 @@ const { eyebrow, title, lead, meta = [] } = Astro.props;
     position: absolute;
     inset: 0;
     z-index: -3;
-    background: var(--grad-brand);
-  }
-
-  .page-header__dots {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    --dot-color: rgb(255 255 255 / 20%);
-    --dot-gap: 18px;
-    mask-image: radial-gradient(110% 100% at 100% 0%, #000 0%, transparent 60%);
-  }
-
-  .page-header__ribbon {
-    z-index: -2;
-    inset-inline-end: 8%;
-    inline-size: clamp(4rem, 11vw, 10rem);
-    opacity: 0.85;
-  }
-
-  /* On phones the copy runs the full width, so pull the ribbon out to the edge
-     as a corner accent instead of letting it sit behind the lead text. */
-  @media (max-width: 47.99rem) {
-    .page-header__ribbon {
-      inset-inline-end: -3.5rem;
-    }
+    background: var(--grad-night);
   }
 
   .page-header__inner > * + * {

@@ -11,9 +11,6 @@ const sections = nav.filter((item) => item.href !== '/');
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__dots dots" aria-hidden="true"></div>
-  <span class="ribbon site-footer__ribbon" aria-hidden="true"></span>
-
   <div class="container site-footer__inner">
     <div class="site-footer__lead">
       <p class="eyebrow eyebrow--light">Get in touch</p>
@@ -88,30 +85,14 @@ const sections = nav.filter((item) => item.href !== '/');
 </footer>
 
 <style>
+  /* Same dark gradient as the hero and the inner-page headers. No decoration:
+     the arc graphic is reserved for the top of a page. */
   .site-footer {
     position: relative;
     overflow: hidden;
-    background: var(--c-black);
+    background: var(--grad-night);
     color: var(--c-white);
     padding-block-start: clamp(3rem, 2rem + 4vw, 5.5rem);
-  }
-
-  .site-footer__dots {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-end: 0;
-    inline-size: min(24rem, 55%);
-    block-size: 12rem;
-    --dot-color: rgb(255 255 255 / 12%);
-    mask-image: linear-gradient(225deg, #000, transparent 72%);
-  }
-
-  .site-footer__ribbon {
-    inset-block: auto -6rem;
-    inset-inline-start: -3rem;
-    block-size: 14rem;
-    inline-size: clamp(4rem, 10vw, 9rem);
-    opacity: 0.9;
   }
 
   .site-footer__inner {

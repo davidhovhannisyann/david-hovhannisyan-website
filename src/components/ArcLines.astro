@@ -1,0 +1,94 @@
+---
+/**
+ * Decorative arc graphic, anchored to the bottom-left of its positioned
+ * ancestor. Used by the landing hero and the inner-page headers.
+ *
+ * The parent must be `position: relative` with `overflow: hidden` — the
+ * graphic is deliberately taller than its container so the bands read at a
+ * useful scale, and the parent clips the overshoot. Nothing here affects
+ * layout, so it never changes the height of the section it sits in.
+ */
+import { url } from '../lib/url';
+
+interface Props {
+  /** Height as a % of the positioned ancestor. Over 100% overshoots and clips. */
+  height?: string;
+  /** Horizontal offset as a % of the graphic's OWN width; negative pulls it left. */
+  shift?: string;
+  /** Overrides below 48rem, where containers are narrower. */
+  heightSm?: string;
+  shiftSm?: string;
+  /**
+   * Strength of the graphic. Short containers pack text across the full width,
+   * so there is nowhere for the bands to sit clear of it — dialling this back
+   * on small screens keeps the colour without fighting the copy.
+   */
+  opacity?: string;
+  opacitySm?: string;
+}
+
+const {
+  height = '112%',
+  shift = '-46%',
+  heightSm = '62%',
+  shiftSm = '-52%',
+  opacity = '1',
+  opacitySm = '1',
+} = Astro.props;
+---
+
+<picture
+  class="arc"
+  aria-hidden="true"
+  style={`--arc-h:${height};--arc-x:${shift};--arc-h-sm:${heightSm};--arc-x-sm:${shiftSm};--arc-o:${opacity};--arc-o-sm:${opacitySm}`}
+>
+  <source srcset={url('/images/art/arc-lines.webp')} type="image/webp" />
+  <img src={url('/images/art/arc-lines.png')} alt="" width="1022" height="1400" />
+</picture>
+
+<style>
+  .arc {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    z-index: -2;
+    display: block;
+    block-size: var(--arc-h);
+    /* A translate percentage resolves against the element's OWN width, so the
+       offset scales with the graphic. A percentage `inset-inline-start` would
+       resolve against the container instead and drift as it resizes. */
+    transform: translateX(var(--arc-x));
+    /* Shrink-to-fit would cap this box at the container's width while the image
+       inside stays wider, which is what made the mask tile and misalign on
+       narrow screens. max-content keeps the box exactly as wide as the image. */
+    inline-size: max-content;
+    opacity: var(--arc-o);
+    pointer-events: none;
+  }
+
+  /* The height lives on the <picture>, not the <img>: this element is
+     absolutely positioned so its percentage height resolves against the
+     ancestor's padding box (definite). A percentage on the <img> would resolve
+     against the picture's own content-derived height and silently fall back to
+     the image's intrinsic 1400px. */
+  /* The mask lives on the image, not the wrapper, so it is always measured
+     against exactly the pixels it is fading. Fades towards the top-right,
+     keeping the bands clear of the headline while staying fully saturated in
+     the bottom-left corner. */
+  .arc img {
+    display: block;
+    block-size: 100%;
+    inline-size: auto;
+    max-inline-size: none;
+    -webkit-mask-image: linear-gradient(to top right, #000 0%, #000 30%, transparent 72%);
+    mask-image: linear-gradient(to top right, #000 0%, #000 30%, transparent 72%);
+  }
+
+  @media (max-width: 47.99rem) {
+    .arc {
+      block-size: var(--arc-h-sm);
+      transform: translateX(var(--arc-x-sm));
+      opacity: var(--arc-o-sm);
+    }
+  }
+</style>

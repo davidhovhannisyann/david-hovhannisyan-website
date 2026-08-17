@@ -1,19 +1,19 @@
 ---
 /**
- * Landing-page hero: full-bleed brand gradient, gold ribbon, dot texture, a
- * heavy uppercase statement on the left and the portrait frame on the right.
+ * Landing-page hero: dark gradient backdrop with the arc graphic bottom-left,
+ * a heavy uppercase statement on the left and the avatar on the right.
  *
  * The frame is the photo slot — set `portrait` in src/data/site.ts and the
- * abstract panel is replaced by the image with no other changes needed.
+ * avatar is replaced by the photo with no other changes needed.
  */
+import ArcLines from './ArcLines.astro';
 import { site, portrait, avatar } from '../data/site';
 import { yearsExperience } from '../data/experience';
 import { projects, platforms } from '../data/projects';
 import { url } from '../lib/url';
 
-/* Values are kept to short numerals so the row stays inside the copy column and
-   clear of the gold ribbon — a long text value overruns into it and gold text
-   on gold becomes unreadable. */
+/* Values are kept to short numerals so the row stays inside the copy column —
+   a long text value overruns it and collides with the arc graphic. */
 const stats = [
   { value: `${yearsExperience}+`, label: 'Years in QA & engineering' },
   { value: String(projects.length), label: 'Titles shipped' },
@@ -23,8 +23,7 @@ const stats = [
 
 <section class="hero">
   <div class="hero__bg" aria-hidden="true"></div>
-  <div class="hero__dots dots" aria-hidden="true"></div>
-  <span class="ribbon hero__ribbon" aria-hidden="true"></span>
+  <ArcLines />
 
   <div class="container hero__inner">
     <div class="hero__copy">
@@ -133,37 +132,13 @@ const stats = [
     align-items: center;
   }
 
+  /* Landing-only backdrop: near-black on the right easing to a deep violet on
+     the left. Shared with the inner-page headers and the footer. */
   .hero__bg {
     position: absolute;
     inset: 0;
     z-index: -3;
-    background: var(--grad-brand);
-  }
-
-  .hero__dots {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    --dot-color: rgb(255 255 255 / 22%);
-    --dot-gap: 18px;
-    mask-image: radial-gradient(120% 90% at 8% 12%, #000 0%, transparent 62%);
-  }
-
-  .hero__ribbon {
-    z-index: -2;
-    /* Sits clear of the copy column so gold text never lands on gold. */
-    inset-inline-start: 63%;
-    inline-size: clamp(6rem, 17vw, 16rem);
-    opacity: 0.92;
-  }
-
-  /* Below the breakpoint where the art shows there's no clear space left for
-     the ribbon — a translucent one just muddies the gradient, so drop it and
-     let the dot grid carry the texture. */
-  @media (max-width: 34.99rem) {
-    .hero__ribbon {
-      display: none;
-    }
+    background: var(--grad-night);
   }
 
   .hero__inner {
@@ -223,9 +198,7 @@ const stats = [
     display: grid;
     gap: var(--space-md) var(--space-lg);
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
-    /* The ribbon leans left as it descends, so the lowest block in the copy
-       column is the one at risk of running under it. Capping the width keeps
-       the whole row clear. */
+    /* Keeps the row inside the copy column, clear of the arc graphic. */
     max-inline-size: 34rem;
     margin-block-start: clamp(1.75rem, 1rem + 2vw, 2.75rem);
     padding-block-start: clamp(1.25rem, 0.8rem + 1.4vw, 1.75rem);
