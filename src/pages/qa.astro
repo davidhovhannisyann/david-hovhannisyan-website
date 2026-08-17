@@ -1,13 +1,16 @@
 ---
 /**
- * QA page: experience timeline and every shipped title in one grid.
+ * QA page: free-form experience entries and every shipped title in one grid.
+ *
+ * Experience uses RoleEntry (open layout, alternating composition) rather than
+ * the bordered RoleCard the other pages still use.
  *
  * There's deliberately no toolkit section here — the full skill list lives on
  * the About page, and duplicating it added nothing.
  */
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
-import RoleCard from '../components/RoleCard.astro';
+import RoleEntry from '../components/RoleEntry.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { rolesFor, yearsExperience } from '../data/experience';
 import { orderedProjects, projects, platforms } from '../data/projects';
@@ -31,18 +34,19 @@ const timeline = rolesFor('qa');
     ]}
   />
 
-  <!-- Experience timeline -->
-  <section class="section">
+  <!-- Experience -->
+  <section class="section experience">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Experience</p>
         <h2 class="h2">Where I've done it</h2>
       </div>
-
-      <ol class="timeline">
-        {timeline.map((role, i) => <RoleCard role={role} delay={i * 90} />)}
-      </ol>
     </div>
+
+    {/* Outside the container: the alternating bands run edge to edge. */}
+    <ol class="entries">
+      {timeline.map((role, i) => <RoleEntry role={role} index={i} />)}
+    </ol>
   </section>
 
   <!-- Shipped titles -->
@@ -69,3 +73,16 @@ const timeline = rolesFor('qa');
     </div>
   </section>
 </Base>
+
+<style>
+  /* The bands provide their own separation, so no gap between them — the
+     diagonal cut is the divider. */
+  .entries {
+    display: grid;
+  }
+
+  /* The last band's slope would otherwise collide with the section below. */
+  .experience {
+    padding-block-end: 0;
+  }
+</style>

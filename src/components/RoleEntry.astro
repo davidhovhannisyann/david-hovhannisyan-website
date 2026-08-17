@@ -1,0 +1,348 @@
+---
+/**
+ * Free-form experience entry — QA page only. The other pages still use
+ * RoleCard, which keeps the compact bordered layout.
+ *
+ * Each entry is a full-bleed band. They alternate light / dark, and the dark
+ * ones are clipped to a parallelogram so the transition between entries is a
+ * diagonal cut rather than a straight seam — the corner-cut device the
+ * reference site uses throughout.
+ *
+ * The logo is FLOATED, not a grid column: the title and description flow
+ * alongside it and then continue underneath once they run past its height,
+ * which is what a fixed column can't do.
+ */
+import type { Role } from '../data/experience';
+import { avatar } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props {
+  role: Role;
+  /** Position in the list; odd entries mirror horizontally and go dark. */
+  index: number;
+}
+
+const { role, index } = Astro.props;
+const flipped = index % 2 === 1;
+
+const character = role.character ?? avatar;
+const scale = role.characterScale ?? 1;
+// Mirror alternate copies so one placeholder figure doesn't look copy-pasted.
+const charFlipX = flipped ? -1 : 1;
+const logoTilt = flipped ? 3 : -3;
+---
+
+{/* --scale / --flip-x live here, not on the <img>: the inner element reads
+    --scale to reserve the character's column, and custom properties only
+    inherit downwards. */}
+<li
+  class="entry"
+  data-flip={flipped ? 'true' : 'false'}
+  data-tone={flipped ? 'dark' : 'light'}
+  style={`--flip-x:${charFlipX}; --scale:${scale}`}
+>
+  <div class="entry__inner container">
+    {
+      role.logo ? (
+        <img
+          class="entry__logo"
+          src={url(role.logo)}
+          alt={role.logoAlt ?? `${role.company} logo`}
+          style={`--tilt:${logoTilt}deg`}
+          loading="lazy"
+          decoding="async"
+          width="348"
+          height="774"
+        />
+      ) : (
+        /* No mark of its own — a type lockup fills the same column so the
+           entry doesn't look like it's missing an asset. */
+        <span class="entry__logo entry__mark" style={`--tilt:${logoTilt}deg`} aria-hidden="true">
+          <span class="entry__mark-initial">{role.company.charAt(0)}</span>
+          <span class="entry__mark-word">{role.company}</span>
+        </span>
+      )
+    }
+
+    <div class="entry__identity">
+      <h3 class="entry__company">
+        {
+          role.companyUrl ? (
+            <a class="link-underline" href={role.companyUrl} target="_blank" rel="noopener noreferrer">
+              {role.company}
+            </a>
+          ) : (
+            role.company
+          )
+        }
+        {role.current && <span class="entry__live">Current</span>}
+      </h3>
+      <p class="entry__role">{role.title}</p>
+      <p class="entry__meta">
+        <span>{role.period}</span>
+        <span>{role.location}</span>
+      </p>
+    </div>
+
+    <div class="entry__body">
+      <ul class="entry__points">
+        {role.bullets.map((bullet) => <li>{bullet}</li>)}
+      </ul>
+      {role.note && <p class="entry__note">{role.note}</p>}
+    </div>
+
+    <img
+      class="entry__char"
+      src={url(character)}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+      width="450"
+      height="612"
+    />
+  </div>
+</li>
+
+<style>
+  .entry {
+    --cut: clamp(1.25rem, 3.5vw, 3.5rem);
+    position: relative;
+    padding-block: clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  /* Dark bands carry the diagonal. Both edges slant the same way, so the band
+     is a parallelogram and each transition reads as one continuous cut.
+     The negative margin pulls neighbours into the sloped area so no wedge of
+     empty page shows through. */
+  .entry[data-tone='dark'] {
+    background: var(--grad-night);
+    clip-path: polygon(0 0, 100% var(--cut), 100% 100%, 0 calc(100% - var(--cut)));
+    margin-block: calc(var(--cut) * -1);
+    padding-block: calc(clamp(3rem, 2rem + 4vw, 5.5rem) + var(--cut));
+
+    /* Redefining the tokens flips every child at once — text, rules, chips —
+       without each one needing its own dark-mode rule. */
+    --c-ink: var(--c-white);
+    --c-muted: rgb(255 255 255 / 72%);
+    --c-line: rgb(255 255 255 / 22%);
+    color: var(--c-white);
+  }
+
+  /* `flow-root` contains the float without clipping the character, which
+     `overflow: hidden` would.
+     The padding reserves a column on the character's side — that, rather than
+     a text width cap, is what guarantees copy never runs underneath it. The
+     small surplus over the art's own width is the whole gap between them, so
+     the figure crowds the text without ever touching a line. */
+  .entry__inner {
+    --char-w: calc(clamp(5rem, 9vw, 7.5rem) * var(--scale, 1));
+    --char-zone: calc(var(--char-w) + clamp(0.75rem, 1.5vw, 1.5rem));
+    display: flow-root;
+    position: relative;
+    padding-inline-end: var(--char-zone);
+    /* The measure is this width minus the logo and the character column, so
+       widening here is what lengthens the lines. Capping the text in `ch`
+       instead only bound one side, which left the character 126px adrift on
+       unflipped entries and 19px away on flipped ones. */
+    max-inline-size: min(100%, 64rem);
+  }
+
+  .entry[data-flip='true'] .entry__inner {
+    padding-inline: var(--char-zone) 0;
+  }
+
+  /* -------------------------------------------------------------- logo -- */
+  /* Floated so the copy wraps beside it and then continues underneath. */
+  .entry__logo {
+    float: left;
+    inline-size: clamp(5rem, 10vw, 8.5rem);
+    block-size: auto;
+    margin-inline-end: clamp(1.25rem, 3vw, 2.5rem);
+    margin-block-end: clamp(0.75rem, 2vw, 1.5rem);
+    object-fit: contain;
+    rotate: var(--tilt);
+    /* Slow, eased settle. The shared --dur (220ms) is tuned for buttons and
+       made this snap. */
+    transition: rotate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .entry[data-flip='true'] .entry__logo {
+    float: right;
+    margin-inline: clamp(1.25rem, 3vw, 2.5rem) 0;
+  }
+
+  /* Triggered by the logo itself, not the whole entry — hovering anywhere in
+     a block this size shouldn't set the artwork moving. */
+  .entry__logo:hover {
+    rotate: 0deg;
+  }
+
+  /* Type lockup stand-in, sized to the same column. */
+  .entry__mark {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.35rem;
+    aspect-ratio: 348 / 620;
+    padding: 0.75rem;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    /* Same cut-corner motif as the bands. */
+    clip-path: polygon(0 0, 100% 0, 100% 82%, 82% 100%, 0 100%);
+  }
+
+  .entry__mark-initial {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .entry__mark-word {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  /* ---------------------------------------------------------- identity -- */
+  .entry__company {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    font-size: clamp(1.6rem, 1.1rem + 2vw, 2.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .entry__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.25rem 0.6rem;
+    background: color-mix(in srgb, var(--c-green) 16%, transparent);
+    color: color-mix(in srgb, var(--c-green) 70%, var(--c-ink));
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .entry__live::before {
+    content: '';
+    inline-size: 0.4rem;
+    block-size: 0.4rem;
+    border-radius: 50%;
+    background: var(--c-green);
+  }
+
+  .entry__role {
+    margin-block-start: 0.45rem;
+    font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.1rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.85rem;
+    margin-block-start: 0.3rem;
+    font-size: var(--fs-sm);
+    color: var(--c-muted);
+  }
+
+  .entry__meta span + span::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1.15rem;
+    block-size: 1px;
+    margin-inline-end: 0.85rem;
+    vertical-align: middle;
+    background: var(--c-line);
+  }
+
+  /* -------------------------------------------------------------- body -- */
+  .entry__body {
+    margin-block-start: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  /* Tight enough to read as one description rather than separate statements,
+     with the measure capped so lines never reach the character. */
+  .entry__points {
+    display: grid;
+    gap: 0.3rem;
+    font-size: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
+    line-height: 1.65;
+    color: var(--c-muted);
+  }
+
+  .entry__note {
+    margin-block-start: clamp(0.9rem, 1.6vw, 1.25rem);
+    padding-inline-start: 0.9rem;
+    border-inline-start: 3px solid var(--c-gold);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  /* --------------------------------------------------------------- art -- */
+  /* Sits in the space the capped measure leaves, leaning in far enough to
+     crowd the text without ever overlapping a line of it. */
+  /* Anchored to the bottom of the content box, not past it — a negative offset
+     pushes it into the band's sloped edge and the clip-path shears it off. */
+  .entry__char {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    inline-size: var(--char-w);
+    block-size: auto;
+    scale: var(--flip-x) 1;
+    filter: drop-shadow(0 12px 22px rgb(20 20 20 / 20%));
+    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .entry[data-flip='true'] .entry__char {
+    inset-inline: 0 auto;
+  }
+
+  /* Same rule: the figure reacts to itself, not to the entry around it. It
+     sits in the reserved gutter, clear of any text, so accepting pointer
+     events here can't interfere with selecting the copy. */
+  .entry__char:hover {
+    translate: 0 -6px;
+  }
+
+  /* ------------------------------------------------------------- stack -- */
+  @media (max-width: 47.99rem) {
+    /* The character stacks below instead of sitting in a side column, so the
+       reserved gutter is no longer needed. */
+    .entry__inner,
+    .entry[data-flip='true'] .entry__inner {
+      padding-inline: 0;
+    }
+
+    /* A float this wide would leave one-word lines beside it, so the logo
+       becomes a normal block and the copy runs full width underneath. */
+    .entry__logo,
+    .entry[data-flip='true'] .entry__logo {
+      float: none;
+      margin-inline: 0;
+      inline-size: clamp(4.5rem, 26vw, 7rem);
+    }
+
+    .entry__char {
+      position: static;
+      display: block;
+      inline-size: calc(clamp(5.5rem, 30vw, 8rem) * var(--scale));
+      margin: clamp(1.25rem, 4vw, 2rem) auto 0;
+    }
+  }
+</style>

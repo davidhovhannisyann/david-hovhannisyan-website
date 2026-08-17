@@ -30,6 +30,17 @@ export interface Role {
   bullets: string[];
   /** Optional trailing note rendered below the bullets. */
   note?: string;
+  /**
+   * Character art for the QA page's free-form entries. Falls back to the
+   * avatar illustration when unset — drop a per-role image in
+   * `public/images/art/` and point this at it to replace the placeholder.
+   */
+  character?: string;
+  /**
+   * Per-role size multiplier for that character art, since each illustration
+   * will sit differently in the frame. 1 is the default; 0.8 is smaller.
+   */
+  characterScale?: number;
 }
 
 export const roles: Role[] = [
@@ -42,7 +53,8 @@ export const roles: Role[] = [
     start: '2024-01',
     location: 'Yerevan, Armenia',
     current: true,
-    logo: '/images/logos/rockbite.png',
+    // Tall portrait lockup — suits the QA page's logo column.
+    logo: '/images/logos/rockbite-logo-long.png',
     logoAlt: 'Rockbite Games logo',
     page: 'qa',
     discipline: 'Quality Assurance',
@@ -144,11 +156,15 @@ export const roles: Role[] = [
   },
 ];
 
-/** Roles for a given page, newest first. */
+/**
+ * Roles for a given page, in the order they appear in the array above.
+ *
+ * Deliberately NOT sorted by date: the newest start date isn't always the one
+ * that should lead — Rockbite is the headline role even though the freelance
+ * work started later. Reorder the entries above to reorder the page.
+ */
 export function rolesFor(page: Role['page']): Role[] {
-  return roles
-    .filter((r) => r.page === page)
-    .sort((a, b) => b.start.localeCompare(a.start));
+  return roles.filter((r) => r.page === page);
 }
 
 /** The current headline role — drives the "latest" card on the landing page. */
