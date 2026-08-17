@@ -63,7 +63,7 @@ export const highlights: Highlight[] = [
     body:
       'GPU-accelerated toolkits in C++, CUDA and LabVIEW at Ngene, internal mobile ' +
       'testing tools in Java and Kotlin, and Selenium automation frameworks.',
-    meta: [`${devRoles.length} roles`, 'C++ · CUDA · Java'],
+    meta: [`${devRoles.length} ${devRoles.length === 1 ? 'role' : 'roles'}`, 'C++ · CUDA · Java'],
     comingSoon: false,
     cta: 'See the work',
   },

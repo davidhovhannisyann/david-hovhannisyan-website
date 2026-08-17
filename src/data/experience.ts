@@ -23,6 +23,20 @@ export interface Role {
   logo: string | null;
   /** Alt text for the logo. */
   logoAlt?: string;
+  /**
+   * The logo's intrinsic pixel size, `[width, height]`. Two jobs: it reserves
+   * the right-shaped box before the image loads, and its ratio decides the
+   * layout — anything 2:1 or wider is treated as a wordmark and set as a block
+   * above the heading instead of a floated column. Defaults to a portrait box.
+   */
+  logoSize?: [number, number];
+  /**
+   * The company's own colour, used for this entry's role title, bullet marks
+   * and rules. Falls back to the page accent when unset. Keep these on the
+   * site palette (`var(--c-red)` and friends) rather than sampling the logo
+   * exactly, so the page still reads as one set of colours.
+   */
+  brand?: string;
   /** Which page this role belongs to. */
   page: 'qa' | 'development' | 'creative';
   /** Discipline badge shown on the card. */
@@ -31,14 +45,18 @@ export interface Role {
   /** Optional trailing note rendered below the bullets. */
   note?: string;
   /**
-   * Character art for the QA page's free-form entries. Falls back to the
-   * avatar illustration when unset — drop a per-role image in
-   * `public/images/art/` and point this at it to replace the placeholder.
+   * The entry's second image, sitting in the outer column beside the copy.
+   * Falls back to the avatar illustration when unset — drop a per-role image
+   * in `public/images/art/` and point this at it to replace the placeholder.
    */
   character?: string;
+  /** That image's intrinsic pixel size, `[width, height]`. */
+  characterSize?: [number, number];
   /**
    * Per-role size multiplier for that character art, since each illustration
    * will sit differently in the frame. 1 is the default; 0.8 is smaller.
+   * Squarer images need a bump to carry the same visual weight as the tall
+   * default avatar.
    */
   characterScale?: number;
 }
@@ -56,6 +74,8 @@ export const roles: Role[] = [
     // Tall portrait lockup — suits the QA page's logo column.
     logo: '/images/logos/rockbite-logo-long.png',
     logoAlt: 'Rockbite Games logo',
+    logoSize: [348, 774],
+    brand: 'var(--c-red)',
     page: 'qa',
     discipline: 'Quality Assurance',
     bullets: [
@@ -77,7 +97,12 @@ export const roles: Role[] = [
     start: '2024-12',
     location: 'Remote',
     current: true,
-    logo: null,
+    // Most of the freelance work came through Fiverr, so its mark stands in
+    // for a company logo this role doesn't have.
+    logo: '/images/logos/fiverr-logo-long.png',
+    logoAlt: 'Fiverr logo',
+    logoSize: [1000, 1000],
+    brand: 'var(--c-green)',
     page: 'qa',
     discipline: 'Quality Assurance',
     bullets: [
@@ -91,6 +116,7 @@ export const roles: Role[] = [
   {
     id: 'ducky',
     company: 'Ducky LTD',
+    companyUrl: 'https://playducky.com/',
     title: 'Video Editor',
     // No calendar dates were given for this contract, so the visible period
     // states its length instead. Replace with real dates when you have them.
@@ -100,7 +126,17 @@ export const roles: Role[] = [
     start: '2025-01',
     location: 'Remote',
     current: false,
-    logo: null,
+    logo: '/images/logos/ducky-logo-long.svg',
+    logoAlt: 'Ducky logo',
+    logoSize: [250, 300],
+    // Ducky's mark is built from the same violet family as the site's own.
+    brand: 'var(--c-purple)',
+    // The game the whole contract was about, rather than the stand-in avatar.
+    character: '/images/art/melon.webp',
+    characterSize: [521, 477],
+    // Near-square, so it needs to run wider than the tall default avatar to
+    // carry the same weight in the column.
+    characterScale: 1.35,
     page: 'creative',
     discipline: 'Video Editing',
     bullets: [
@@ -111,29 +147,6 @@ export const roles: Role[] = [
       'Worked closely with the marketing team on new creative directions, campaign requirements and a high volume of platform-ready output.',
     ],
     note: 'Melon Sandbox — 100M+ downloads on Google Play.',
-  },
-
-  // ---------------------------------------------------------------------
-  // TEMPLATE ENTRY — placeholder text, meant to be filled in.
-  // Replace `title`, `period`, `start`, `location` and every bullet below.
-  // `start` is only used for sorting (newest first), so keep it accurate.
-  // ---------------------------------------------------------------------
-  {
-    id: 'independent',
-    company: 'Independent',
-    title: 'Software Developer',
-    period: 'Dates to fill in',
-    start: '2025-01',
-    location: 'Remote',
-    current: true,
-    logo: null,
-    page: 'development',
-    discipline: 'Software Engineering',
-    bullets: [
-      'Replace this line with what you built, and the language or framework you used.',
-      'Add one bullet per project or responsibility.',
-      'Keep the same voice as the other roles — past tense, one concrete thing each.',
-    ],
   },
   {
     id: 'ngene',
@@ -146,6 +159,13 @@ export const roles: Role[] = [
     current: false,
     logo: '/images/logos/ngene.png',
     logoAlt: 'Ngene logo',
+    // 5:1 wordmark — the entry renders it as a masthead above the heading
+    // rather than squeezing it into the floated logo column.
+    logoSize: [700, 136],
+    brand: 'var(--c-blue)',
+    character: '/images/art/labview.svg',
+    characterSize: [396, 407],
+    characterScale: 1.2,
     page: 'development',
     discipline: 'Software Engineering',
     bullets: [

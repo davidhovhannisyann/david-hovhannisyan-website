@@ -274,7 +274,7 @@ import { url } from '../lib/url';
     background: linear-gradient(
       160deg,
       var(--c-paper),
-      color-mix(in srgb, var(--c-purple) 8%, var(--c-paper))
+      color-mix(in srgb, var(--c-violet) 8%, var(--c-paper))
     );
   }
 
@@ -325,12 +325,15 @@ import { url } from '../lib/url';
     block-size: 100%;
   }
 
+  /* Black-to-purple, the same family as the nav, header and footer bands —
+     rather than the old blue-to-green, which put a second colour scheme on a
+     page that has no section accent of its own. */
   .skill__icon {
     display: grid;
     place-items: center;
     inline-size: 2.5rem;
     block-size: 2.5rem;
-    background: var(--grad-brand-diag);
+    background: var(--grad-purple-diag);
     color: var(--c-white);
   }
 
@@ -392,11 +395,13 @@ import { url } from '../lib/url';
     border: 1px solid var(--c-line);
   }
 
+  /* Two stops, matching the toolkit tiles above, instead of the three-colour
+     brand gradient that ran blue→green→yellow inside a 6px bar. */
   .lang__fill {
     display: block;
     block-size: 100%;
     inline-size: var(--pct);
-    background: var(--grad-brand);
+    background: var(--grad-purple);
   }
 
   .edu {
@@ -439,7 +444,7 @@ import { url } from '../lib/url';
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--c-gold);
+    color: var(--accent-text);
   }
 
 </style>

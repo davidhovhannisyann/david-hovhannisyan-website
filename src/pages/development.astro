@@ -2,14 +2,19 @@
 /**
  * Development page: engineering roles, plus a placeholder for the project
  * write-ups that aren't ready yet.
+ *
+ * Experience uses the same RoleEntry bands as QA and Creative. Shared for now
+ * rather than by principle — if this page later grows demos, embeds or a
+ * different composition, fork RoleEntry instead of bending it.
  */
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
-import RoleCard from '../components/RoleCard.astro';
+import RoleEntry from '../components/RoleEntry.astro';
 import ComingSoon from '../components/ComingSoon.astro';
 import { rolesFor } from '../data/experience';
 
 const timeline = rolesFor('development');
+const roleCount = `${timeline.length} ${timeline.length === 1 ? 'role' : 'roles'}`;
 ---
 
 <Base
@@ -21,21 +26,22 @@ const timeline = rolesFor('development');
     eyebrow="Development"
     title="Tools, automation<br />and side projects"
     lead="The engineering side of the work — GPU-accelerated toolkits in C++ and CUDA, internal testing tools in Java and Kotlin, and the things built for the fun of it."
-    meta={[`${timeline.length} roles`, 'C++ · CUDA · Java · Kotlin']}
+    meta={[roleCount, 'C++ · CUDA · Java · Kotlin']}
   />
 
   <!-- Engineering roles -->
-  <section class="section">
+  <section class="section section--entries">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Experience</p>
         <h2 class="h2">Where I've built it</h2>
       </div>
-
-      <ol class="timeline">
-        {timeline.map((role, i) => <RoleCard role={role} delay={i * 90} />)}
-      </ol>
     </div>
+
+    {/* Outside the container: the alternating bands run edge to edge. */}
+    <ol class="entries">
+      {timeline.map((role, i) => <RoleEntry role={role} index={i} />)}
+    </ol>
   </section>
 
   <!-- Project write-ups still to come -->

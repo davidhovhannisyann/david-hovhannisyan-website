@@ -26,11 +26,11 @@ const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } =
   <div class="hl__bar" aria-hidden="true"></div>
 
   <div class="hl__body">
+    {/* No status pill on an active section — the card being here says that.
+        Only the "coming soon" state is worth calling out. */}
     <div class="hl__top">
       <span class="hl__section">{section}</span>
-      <span class={comingSoon ? 'chip' : 'chip chip--live'}>
-        {comingSoon ? 'Coming soon' : 'Active'}
-      </span>
+      {comingSoon && <span class="chip">Coming soon</span>}
     </div>
 
     <p class="hl__kicker">{kicker}</p>
@@ -63,15 +63,18 @@ const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } =
 
 <style>
   /* Each card carries its own accent so a row of them reads as three
-     distinct sections rather than three copies. */
+     distinct sections rather than three copies. The [data-accent] rule in
+     global.css re-derives --accent-text from whichever colour lands here, so
+     the section label, the CTA and the headline's hover state all follow the
+     card rather than the site default. */
   .hl[data-accent='qa'] {
-    --accent: var(--c-teal);
+    --accent: var(--c-blue);
   }
   .hl[data-accent='creative'] {
-    --accent: var(--c-pink);
+    --accent: var(--c-red);
   }
   .hl[data-accent='development'] {
-    --accent: var(--c-blue);
+    --accent: var(--c-green);
   }
 
   .hl {
@@ -104,7 +107,7 @@ const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } =
     font-weight: 800;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .hl__kicker {
@@ -130,7 +133,7 @@ const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } =
   }
 
   .hl__link:hover {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .hl__text {
@@ -154,7 +157,7 @@ const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } =
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .hl__cta svg {

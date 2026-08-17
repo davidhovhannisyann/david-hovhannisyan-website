@@ -6,9 +6,9 @@
  * Mobile (<60rem):  the links collapse into a toggleable dropdown panel, driven
  *                   by a hamburger button pinned to the right of the bar.
  *
- * The bar starts transparent over the gradient header and turns solid white
- * once the page is scrolled, which is why every page begins with a coloured
- * header block.
+ * The bar starts transparent over the gradient header and picks up the main
+ * gradient once the page is scrolled, which is why every page begins with a
+ * coloured header block.
  *
  * Accessibility: the toggle is a real <button> with aria-expanded/aria-controls,
  * Escape closes the panel and returns focus to the toggle, focus is trapped
@@ -71,11 +71,13 @@ const currentPath = Astro.url.pathname;
   }
 
   /* Solid state, applied by the scroll listener and whenever the mobile
-     panel is open (an open dropdown needs an opaque backdrop). */
+     panel is open (an open dropdown needs an opaque backdrop). Carries the
+     main gradient rather than white, so the bar reads as part of the page
+     instead of a separate chrome strip. At the top it stays transparent. */
   .site-nav[data-scrolled='true'],
   .site-nav:has(#nav-toggle[aria-expanded='true']) {
-    background: var(--c-white);
-    box-shadow: var(--shadow-sm);
+    background: var(--grad-night);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 10%), 0 8px 24px rgb(0 0 0 / 28%);
   }
 
   .site-nav__inner {
@@ -115,11 +117,6 @@ const currentPath = Astro.url.pathname;
       opacity var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
   }
 
-  .site-nav[data-scrolled='true'] .nav-toggle__bars span,
-  .nav-toggle[aria-expanded='true'] .nav-toggle__bars span {
-    background: var(--c-black);
-  }
-
   /* Hamburger morphs into an X */
   .nav-toggle[aria-expanded='true'] .nav-toggle__bars span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
@@ -138,9 +135,9 @@ const currentPath = Astro.url.pathname;
     inset-block-start: 100%;
     inset-inline: 0;
     padding: var(--space-md) var(--gutter) calc(var(--space-xl) + env(safe-area-inset-bottom));
-    background: var(--c-white);
+    background: var(--grad-night);
     box-shadow: var(--shadow-lg);
-    border-block-start: 1px solid var(--c-line);
+    border-block-start: 1px solid rgb(255 255 255 / 14%);
 
     /* Collapsed by default. visibility keeps it out of the tab order. */
     visibility: hidden;
@@ -167,12 +164,12 @@ const currentPath = Astro.url.pathname;
   .nav-link {
     display: block;
     padding: 0.85rem 0.25rem;
-    border-block-end: 1px solid var(--c-line);
+    border-block-end: 1px solid rgb(255 255 255 / 14%);
     font-size: 1.05rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--c-black);
+    color: var(--c-white);
     transition: color var(--dur) var(--ease-out),
       padding-inline-start var(--dur) var(--ease-out);
   }
@@ -185,15 +182,15 @@ const currentPath = Astro.url.pathname;
 
   .nav-link[data-accent='qa']:hover,
   .nav-link[data-accent='qa'][aria-current='page'] {
-    color: var(--c-teal);
+    color: var(--c-blue);
   }
   .nav-link[data-accent='creative']:hover,
   .nav-link[data-accent='creative'][aria-current='page'] {
-    color: var(--c-pink);
+    color: var(--c-red);
   }
   .nav-link[data-accent='development']:hover,
   .nav-link[data-accent='development'][aria-current='page'] {
-    color: var(--c-blue);
+    color: var(--c-green);
   }
 
   /* -------------------------------------------------- panel (desktop) -- */
@@ -258,7 +255,7 @@ const currentPath = Astro.url.pathname;
       inset-inline: 0;
       inset-block-end: 0;
       block-size: 3px;
-      background: var(--c-gold);
+      background: var(--c-yellow);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform var(--dur) var(--ease-out);
@@ -270,24 +267,17 @@ const currentPath = Astro.url.pathname;
     }
 
     .nav-link[data-accent='qa']::after {
-      background: var(--c-teal);
-    }
-    .nav-link[data-accent='creative']::after {
-      background: var(--c-pink);
-    }
-    .nav-link[data-accent='development']::after {
       background: var(--c-blue);
     }
-
-    /* Once the bar goes solid, links flip to dark text. */
-    .site-nav[data-scrolled='true'] .nav-link {
-      color: var(--c-ink);
+    .nav-link[data-accent='creative']::after {
+      background: var(--c-red);
+    }
+    .nav-link[data-accent='development']::after {
+      background: var(--c-green);
     }
 
-    .site-nav[data-scrolled='true'] .nav-link:hover,
-    .site-nav[data-scrolled='true'] .nav-link[aria-current='page'] {
-      color: var(--c-black);
-    }
+    /* No dark-text flip on scroll any more — the bar stays dark, so the
+       links stay white and the accent underline keeps carrying the state. */
   }
 </style>
 

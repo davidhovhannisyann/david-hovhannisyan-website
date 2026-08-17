@@ -99,12 +99,14 @@ const { eyebrow, title, lead, meta = [] } = Astro.props;
     gap: var(--space-md);
   }
 
-  /* Gold bullet between items, but not before the first one. */
+  /* Accent bullet between items, but not before the first one. Takes the
+     page's own colour, so a QA header doesn't punctuate blue text with gold.
+     This band is dark, so the raw colour is used rather than the deepened one. */
   .page-header__meta li + li::before {
     content: '';
     inline-size: 5px;
     block-size: 5px;
-    background: var(--c-gold);
+    background: var(--accent);
     flex: none;
   }
 </style>

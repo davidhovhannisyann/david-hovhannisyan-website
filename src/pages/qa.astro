@@ -2,9 +2,6 @@
 /**
  * QA page: free-form experience entries and every shipped title in one grid.
  *
- * Experience uses RoleEntry (open layout, alternating composition) rather than
- * the bordered RoleCard the other pages still use.
- *
  * There's deliberately no toolkit section here — the full skill list lives on
  * the About page, and duplicating it added nothing.
  */
@@ -35,7 +32,7 @@ const timeline = rolesFor('qa');
   />
 
   <!-- Experience -->
-  <section class="section experience">
+  <section class="section section--entries">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Experience</p>
@@ -54,7 +51,7 @@ const timeline = rolesFor('qa');
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Shipped</p>
-        <h2 class="h2">Titles out<br /><span class="text-gradient">in the wild</span></h2>
+        <h2 class="h2">Titles out<br /><span class="text-highlight">in the wild</span></h2>
         <p class="lead">
           {projects.length} released titles across {platforms.join(', ')} — each one through
           the same treatment: regression passes, sanity checks, defect reports and fix
@@ -73,16 +70,3 @@ const timeline = rolesFor('qa');
     </div>
   </section>
 </Base>
-
-<style>
-  /* The bands provide their own separation, so no gap between them — the
-     diagonal cut is the divider. */
-  .entries {
-    display: grid;
-  }
-
-  /* The last band's slope would otherwise collide with the section below. */
-  .experience {
-    padding-block-end: 0;
-  }
-</style>

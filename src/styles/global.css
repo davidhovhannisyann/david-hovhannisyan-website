@@ -2,7 +2,8 @@
    DESIGN SYSTEM
    ---------------------------------------------------------------------------
    Visual language adapted from usspeaking.com: Montserrat in heavy uppercase
-   with very tight leading, a cyan→purple gradient, a gold accent used sparingly,
+   with very tight leading. The palette has since moved to a black/violet base
+   with the four arc-lines colours as highlights,
    hard-edged (zero-radius) buttons, and dot-grid / diagonal-ribbon motifs.
 
    Responsive strategy:
@@ -20,13 +21,23 @@
 
 /* ---------------------------------------------------------------- tokens -- */
 :root {
-  /* Brand palette, sampled from the reference site */
-  --c-blue: #0094c6;
-  --c-purple: #9747ff;
-  --c-gold: #d4af37;
-  --c-teal: #11beb3;
-  --c-pink: #f70492;
-  --c-green: #43bc9a;
+  /* Highlight palette — the four colours of the arc-lines graphic. Everything
+     accent-coloured on the site comes from these; the base is black and the
+     deep violet below. */
+  --c-blue: #27aae0;
+  /* Deeper than the raw arc-lines mint (#2af085), which was bright enough that
+     green icons, rules and timeline nodes glared on the white Development page.
+     Same hue (~150°), dropped in lightness so it holds up on white. */
+  --c-green: #0ea45e;
+  --c-yellow: #face0d;
+  --c-red: #f70b0e;
+
+  /* The violet end of the main gradient. */
+  --c-violet: #1b0b30;
+  /* The same violet lifted into a usable ink: hue 266° like --c-violet, but
+     light enough to read as purple rather than black. Carries the highlight on
+     the pages with no section colour of their own (Home, About). */
+  --c-purple: #7426d9;
 
   /* Neutrals */
   --c-ink: #2f2d2e;
@@ -36,17 +47,24 @@
   --c-line: #d6d6d6;
   --c-muted: #6b6869;
 
-  /* Signature gradient — still used for accents (skill tiles, contact bands). */
-  --grad-brand: linear-gradient(90deg, var(--c-blue) 0%, var(--c-purple) 100%);
-  --grad-brand-diag: linear-gradient(135deg, var(--c-blue) 0%, var(--c-purple) 100%);
+  /* Two-stop black-to-purple, the same family as the nav / header / footer
+     backdrop. Replaces the old blue→green→yellow brand gradient, which put
+     three of the four arc colours into every element that used it. */
+  --grad-purple: linear-gradient(90deg, var(--c-black) 0%, var(--c-purple) 100%);
+  --grad-purple-diag: linear-gradient(135deg, var(--c-black) 0%, var(--c-purple) 100%);
 
   /* Dark backdrop used by the hero, the inner-page headers and the footer:
-     black on the right easing to a deep violet on the left. */
-  --grad-night: linear-gradient(to left, #000000 0%, #1b0b30 100%);
+     black on the right easing to the deep violet on the left. */
+  --grad-night: linear-gradient(to left, #000000 0%, var(--c-violet) 100%);
 
   /* Per-section accents. Each page sets --accent on <body>. */
-  --accent: var(--c-gold);
+  --accent: var(--c-yellow);
   --accent-ink: var(--c-black);
+
+  /* Colour for a highlighted word inside a heading. Home and About have no
+     section colour of their own, so they take the brand purple; each section
+     page overrides this with its own accent below. */
+  --highlight: var(--c-purple);
 
   /* Typography */
   --font-sans: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system,
@@ -88,18 +106,50 @@
   --dur: 220ms;
 }
 
-/* Accent themes, applied per page via <body data-accent="..."> */
+/* Accent themes, applied per page via <body data-accent="...">. One arc colour
+   each, so the sections stay distinguishable. */
 body[data-accent='qa'] {
-  --accent: var(--c-teal);
+  --accent: var(--c-blue);
   --accent-ink: var(--c-black);
 }
 body[data-accent='creative'] {
-  --accent: var(--c-pink);
+  --accent: var(--c-red);
   --accent-ink: var(--c-white);
 }
 body[data-accent='development'] {
-  --accent: var(--c-blue);
-  --accent-ink: var(--c-white);
+  --accent: var(--c-green);
+  --accent-ink: var(--c-black);
+}
+
+/* Deepened accent, for small text and links on light backgrounds — the raw arc
+   colours are bright enough that yellow and green are unreadable at body sizes.
+   Keeps the hue, adds just enough depth to stay legible.
+
+   This has to be re-declared everywhere --accent is, not written once on :root:
+   a custom property whose value contains var() is substituted where it is
+   DECLARED, not where it is used. A lone :root declaration therefore froze it
+   to the root's yellow and inherited that same yellow into every accented page
+   and every accented card — which is why section colours were showing up as
+   one shared dark gold. */
+:root,
+body,
+[data-accent] {
+  --accent-text: color-mix(in srgb, var(--accent) 72%, var(--c-black));
+}
+
+/* Section pages highlight heading words in their own colour rather than the
+   brand purple. Declared on the same element as --accent-text above, so it
+   picks up that element's deepened accent. */
+body[data-accent] {
+  --highlight: var(--accent-text);
+}
+
+/* On the dark bands the raw colour is already legible, so undo the deepening
+   there — otherwise accents read as muddy against near-black. */
+[data-tone='dark'],
+.section--dark,
+.site-footer {
+  --accent-text: var(--accent);
 }
 
 /* ----------------------------------------------------------------- reset -- */
@@ -229,15 +279,14 @@ h4 {
   max-inline-size: var(--maxw-prose);
 }
 
-.text-gold {
-  color: var(--c-gold);
+.text-accent {
+  color: var(--c-yellow);
 }
 
-.text-gradient {
-  background: var(--grad-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* A highlighted word inside a heading. One flat colour — the page's own — in
+   place of the old three-stop blue→green→yellow gradient clip. */
+.text-highlight {
+  color: var(--highlight);
 }
 
 /* --------------------------------------------------------------- layout -- */
@@ -326,7 +375,7 @@ h4 {
 }
 
 .btn:hover {
-  --btn-bg: var(--c-gold);
+  --btn-bg: var(--c-yellow);
   --btn-fg: var(--c-black);
   transform: translateY(-2px);
 }
@@ -409,7 +458,7 @@ h4 {
 .chip--live {
   border-color: color-mix(in srgb, var(--c-green) 50%, transparent);
   background: color-mix(in srgb, var(--c-green) 12%, var(--c-white));
-  color: #1e7a63;
+  color: color-mix(in srgb, var(--c-green) 65%, var(--c-black));
 }
 
 .chip--live::before {
@@ -457,12 +506,12 @@ h4 {
   --dot-color: rgb(47 45 46 / 18%);
 }
 
-/* Diagonal gold ribbon sweeping across a section. */
+/* Diagonal accent ribbon sweeping across a section. */
 .ribbon {
   position: absolute;
   inset-block: -25%;
   inline-size: clamp(5rem, 14vw, 13rem);
-  background: var(--c-gold);
+  background: var(--accent);
   transform: skewX(-22deg);
   pointer-events: none;
 }
@@ -471,7 +520,7 @@ h4 {
 .rule-gradient {
   block-size: 4px;
   inline-size: 4.5rem;
-  background: var(--grad-brand);
+  background: var(--grad-purple);
 }
 
 /* ------------------------------------------------------------------ cards -- */
@@ -494,9 +543,27 @@ h4 {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--c-line));
 }
 
+/* --------------------------------------------------------- experience -- */
+/* The full-bleed RoleEntry bands. Shared by QA, Development and Creative, so
+   the two structural rules live here rather than being copied into all three.
+   Anything a page wants to do differently still belongs in that page's own
+   <style> block — this is only the list geometry.
+
+   The bands provide their own separation (the diagonal cut IS the divider), so
+   the grid has no gap, and the section drops its trailing padding because the
+   last band's slope would otherwise collide with whatever follows. */
+.entries {
+  display: grid;
+}
+
+.section--entries {
+  padding-block-end: 0;
+}
+
 /* -------------------------------------------------------------- timeline -- */
-/* Vertical rail behind the RoleCard nodes. Shared by the QA and Development
-   pages, so it lives here rather than in either page's scoped styles. */
+/* Vertical rail behind the RoleCard nodes. RoleCard is no longer rendered by
+   any page — every experience list now uses the RoleEntry bands above — but
+   both are kept for pages that want the compact card layout back. */
 .timeline {
   position: relative;
   display: grid;
@@ -526,7 +593,7 @@ h4 {
 
 /* ------------------------------------------------------- focus & a11y -- */
 :focus-visible {
-  outline: 3px solid var(--c-gold);
+  outline: 3px solid var(--c-yellow);
   outline-offset: 3px;
 }
 

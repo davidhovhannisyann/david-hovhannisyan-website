@@ -1,7 +1,8 @@
 ---
 /**
- * Free-form experience entry — QA page only. The other pages still use
- * RoleCard, which keeps the compact bordered layout.
+ * Free-form experience entry. Every page's experience list is built from these
+ * — RoleCard's compact bordered layout is no longer rendered anywhere, but is
+ * kept around for a page that wants to diverge later.
  *
  * Each entry is a full-bleed band. They alternate light / dark, and the dark
  * ones are clipped to a parallelogram so the transition between entries is a
@@ -10,7 +11,12 @@
  *
  * The logo is FLOATED, not a grid column: the title and description flow
  * alongside it and then continue underneath once they run past its height,
- * which is what a fixed column can't do.
+ * which is what a fixed column can't do. Wide wordmarks are the exception —
+ * see `wideLogo` below.
+ *
+ * Colour: an entry with its own `brand` overrides --accent for its whole band,
+ * so the role title, bullet marks and note rule take the company's colour
+ * rather than the page's. Everything structural still comes from the page.
  */
 import type { Role } from '../data/experience';
 import { avatar } from '../data/site';
@@ -26,10 +32,19 @@ const { role, index } = Astro.props;
 const flipped = index % 2 === 1;
 
 const character = role.character ?? avatar;
+const [charW, charH] = role.characterSize ?? [450, 612];
 const scale = role.characterScale ?? 1;
 // Mirror alternate copies so one placeholder figure doesn't look copy-pasted.
 const charFlipX = flipped ? -1 : 1;
-const logoTilt = flipped ? 3 : -3;
+
+const [logoW, logoH] = role.logoSize ?? [348, 774];
+/* A 5:1 wordmark like Ngene's floated into the logo column would be a ~26px
+   sliver next to a 40px heading. Anything this wide becomes a block above the
+   copy instead — read as a masthead, at a size where the type is legible. */
+const wideLogo = logoW / logoH >= 2;
+// A tilted wordmark reads as a mistake rather than a flourish, so only the
+// portrait marks get the lean.
+const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
 ---
 
 {/* --scale / --flip-x live here, not on the <img>: the inner element reads
@@ -39,7 +54,10 @@ const logoTilt = flipped ? 3 : -3;
   class="entry"
   data-flip={flipped ? 'true' : 'false'}
   data-tone={flipped ? 'dark' : 'light'}
-  style={`--flip-x:${charFlipX}; --scale:${scale}`}
+  data-logo={wideLogo ? 'wide' : 'tall'}
+  style={`--flip-x:${charFlipX}; --scale:${scale};${
+    role.brand ? ` --accent:${role.brand};` : ''
+  }`}
 >
   <div class="entry__inner container">
     {
@@ -51,8 +69,8 @@ const logoTilt = flipped ? 3 : -3;
           style={`--tilt:${logoTilt}deg`}
           loading="lazy"
           decoding="async"
-          width="348"
-          height="774"
+          width={logoW}
+          height={logoH}
         />
       ) : (
         /* No mark of its own — a type lockup fills the same column so the
@@ -98,8 +116,8 @@ const logoTilt = flipped ? 3 : -3;
       aria-hidden="true"
       loading="lazy"
       decoding="async"
-      width="450"
-      height="612"
+      width={charW}
+      height={charH}
     />
   </div>
 </li>
@@ -109,6 +127,12 @@ const logoTilt = flipped ? 3 : -3;
     --cut: clamp(1.25rem, 3.5vw, 3.5rem);
     position: relative;
     padding-block: clamp(3rem, 2rem + 4vw, 5.5rem);
+
+    /* An entry with its own brand colour sets --accent inline, so the deepened
+       companion has to be re-derived here — global.css computes it from the
+       page's accent, one level up, and a var() reference is substituted where
+       it is declared rather than where it is read. */
+    --accent-text: color-mix(in srgb, var(--accent) 72%, var(--c-black));
   }
 
   /* Dark bands carry the diagonal. Both edges slant the same way, so the band
@@ -126,6 +150,10 @@ const logoTilt = flipped ? 3 : -3;
     --c-ink: var(--c-white);
     --c-muted: rgb(255 255 255 / 72%);
     --c-line: rgb(255 255 255 / 22%);
+    /* The raw colour is already legible here, so skip the deepening. Repeated
+       from global.css because the .entry rule above is more specific once
+       Astro has scoped it. */
+    --accent-text: var(--accent);
     color: var(--c-white);
   }
 
@@ -178,6 +206,28 @@ const logoTilt = flipped ? 3 : -3;
     rotate: 0deg;
   }
 
+  /* Wide wordmarks (Ngene's is 5:1) come out of the float entirely: at the
+     column's width they'd be a couple of dozen pixels tall, with the copy
+     wrapping around a sliver. As a block above the heading they get to run
+     wide enough to read, and the copy below keeps its full measure. */
+  .entry[data-logo='wide'] .entry__logo,
+  .entry[data-flip='true'][data-logo='wide'] .entry__logo {
+    float: none;
+    inline-size: clamp(9rem, 24vw, 15rem);
+    margin-inline: 0;
+    margin-block-end: clamp(1rem, 2.2vw, 1.75rem);
+  }
+
+  /* Nothing wraps beside it, so the lift replaces the straighten as the
+     hover response. */
+  .entry[data-logo='wide'] .entry__logo {
+    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .entry[data-logo='wide'] .entry__logo:hover {
+    translate: 0 -4px;
+  }
+
   /* Type lockup stand-in, sized to the same column. */
   .entry__mark {
     display: grid;
@@ -196,7 +246,7 @@ const logoTilt = flipped ? 3 : -3;
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 900;
     line-height: 1;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .entry__mark-word {
@@ -205,7 +255,7 @@ const logoTilt = flipped ? 3 : -3;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     text-align: center;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   /* ---------------------------------------------------------- identity -- */
@@ -220,13 +270,16 @@ const logoTilt = flipped ? 3 : -3;
     text-transform: uppercase;
   }
 
+  /* Status, not brand — this stays green whatever colour the entry carries.
+     Deep forest green on a green wash: the old mid-green on a near-white tint
+     was too light to read at this size. */
   .entry__live {
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
     padding: 0.25rem 0.6rem;
-    background: color-mix(in srgb, var(--c-green) 16%, transparent);
-    color: color-mix(in srgb, var(--c-green) 70%, var(--c-ink));
+    background: color-mix(in srgb, var(--c-green) 22%, transparent);
+    color: color-mix(in srgb, var(--c-green) 65%, var(--c-black));
     font-size: var(--fs-xs);
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -238,6 +291,17 @@ const logoTilt = flipped ? 3 : -3;
     inline-size: 0.4rem;
     block-size: 0.4rem;
     border-radius: 50%;
+    background: color-mix(in srgb, var(--c-green) 70%, var(--c-black));
+  }
+
+  /* On a dark band the same treatment disappears — go the other way and lift
+     the green off the background instead of pushing it into it. */
+  .entry[data-tone='dark'] .entry__live {
+    background: color-mix(in srgb, var(--c-green) 24%, transparent);
+    color: color-mix(in srgb, var(--c-green) 55%, var(--c-white));
+  }
+
+  .entry[data-tone='dark'] .entry__live::before {
     background: var(--c-green);
   }
 
@@ -247,7 +311,7 @@ const logoTilt = flipped ? 3 : -3;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .entry__meta {
@@ -284,10 +348,12 @@ const logoTilt = flipped ? 3 : -3;
     color: var(--c-muted);
   }
 
+  /* Follows the entry's colour rather than a fixed yellow, so a Rockbite band
+     doesn't carry a gold rule next to red type. */
   .entry__note {
     margin-block-start: clamp(0.9rem, 1.6vw, 1.25rem);
     padding-inline-start: 0.9rem;
-    border-inline-start: 3px solid var(--c-gold);
+    border-inline-start: 3px solid var(--accent);
     font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--c-ink);
@@ -323,10 +389,13 @@ const logoTilt = flipped ? 3 : -3;
   /* ------------------------------------------------------------- stack -- */
   @media (max-width: 47.99rem) {
     /* The character stacks below instead of sitting in a side column, so the
-       reserved gutter is no longer needed. */
+       column reserved for it goes away. The page gutter has to be restated
+       rather than zeroed, though — this element is also a .container, and
+       dropping its padding outright ran every line of copy into the screen
+       edge. Same expression as .container's own rule. */
     .entry__inner,
     .entry[data-flip='true'] .entry__inner {
-      padding-inline: 0;
+      padding-inline: max(var(--gutter), env(safe-area-inset-left));
     }
 
     /* A float this wide would leave one-word lines beside it, so the logo
@@ -336,6 +405,13 @@ const logoTilt = flipped ? 3 : -3;
       float: none;
       margin-inline: 0;
       inline-size: clamp(4.5rem, 26vw, 7rem);
+    }
+
+    /* Wordmarks are already blocks at every width; they only need to give up
+       some of their desktop size here. */
+    .entry[data-logo='wide'] .entry__logo,
+    .entry[data-flip='true'][data-logo='wide'] .entry__logo {
+      inline-size: clamp(8rem, 46vw, 12rem);
     }
 
     .entry__char {
