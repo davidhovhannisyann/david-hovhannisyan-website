@@ -1,8 +1,10 @@
 /**
  * Shipped titles.
  *
- * `via` records which role a title came through, and drives the grouping on the
- * QA page — Rockbite's live mobile games sit apart from the freelance work.
+ * `via` records which role a title came through. It isn't rendered — the list
+ * is shown as one grid ordered by store — but it's kept because the developer
+ * name alone doesn't distinguish studio work from freelance, and that would be
+ * tedious to reconstruct later.
  *
  * All metadata is real: Steam entries come from the official storefront API,
  * Google Play entries from each app's store listing, itch.io from its page.
@@ -27,6 +29,7 @@ export interface Project {
    * tinted panel instead so it isn't cropped to a letterbox.
    */
   art: { type: 'banner' | 'icon'; src: string };
+  /** Provenance only — not currently shown on the page. */
   via: Via;
   /** Optional second link, e.g. a devlog that credits the team. */
   credit?: { label: string; href: string };
@@ -181,10 +184,21 @@ export const projects: Project[] = [
   },
 ];
 
-/** Titles from a given role, in listed order. */
-export function projectsVia(via: Via): Project[] {
-  return projects.filter((p) => p.via === via);
-}
+/**
+ * Display order on the QA page: Steam first, then Google Play, then itch.io.
+ *
+ * The page renders `orderedProjects`, NOT the raw `projects` array — so where a
+ * title sits in the list above doesn't matter, only its `platform`. Add new
+ * entries wherever they read best; they'll slot into the right block on their
+ * own. Sorting is stable, so titles within one platform keep the order above.
+ */
+const PLATFORM_ORDER: Platform[] = ['Steam', 'Google Play', 'itch.io'];
 
-/** Distinct store platforms across everything shipped. */
-export const platforms: Platform[] = [...new Set(projects.map((p) => p.platform))];
+export const orderedProjects: Project[] = [...projects].sort(
+  (a, b) => PLATFORM_ORDER.indexOf(a.platform) - PLATFORM_ORDER.indexOf(b.platform),
+);
+
+/** Distinct store platforms present, in display order. */
+export const platforms: Platform[] = PLATFORM_ORDER.filter((p) =>
+  projects.some((project) => project.platform === p),
+);

@@ -1,10 +1,10 @@
 ---
 /**
- * Site navigation.
+ * Site navigation — links only, no logo and no call-to-action.
  *
- * Desktop (≥60rem): a horizontal bar — logo left, links right.
- * Mobile (<60rem):  the links collapse into a toggleable dropdown panel driven
- *                   by a hamburger button.
+ * Desktop (≥60rem): a centred horizontal row of links.
+ * Mobile (<60rem):  the links collapse into a toggleable dropdown panel, driven
+ *                   by a hamburger button pinned to the right of the bar.
  *
  * The bar starts transparent over the gradient header and turns solid white
  * once the page is scrolled, which is why every page begins with a coloured
@@ -14,7 +14,7 @@
  * Escape closes the panel and returns focus to the toggle, focus is trapped
  * inside the open panel, and background scrolling is locked while it is open.
  */
-import { nav, site, links } from '../data/site';
+import { nav } from '../data/site';
 import { url, isActive } from '../lib/url';
 
 const currentPath = Astro.url.pathname;
@@ -24,14 +24,6 @@ const currentPath = Astro.url.pathname;
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="site-nav__inner container">
-    <a class="brand" href={url('/')} aria-label={`${site.name} — home`}>
-      <span class="brand__mark" aria-hidden="true">{site.initials}</span>
-      <span class="brand__text">
-        <span class="brand__name">{site.name}</span>
-        <span class="brand__role">{site.role}</span>
-      </span>
-    </a>
-
     <button
       class="nav-toggle"
       id="nav-toggle"
@@ -62,27 +54,6 @@ const currentPath = Astro.url.pathname;
           ))
         }
       </ul>
-
-      <a
-        class="btn nav-cta"
-        href={links.linkedin.href}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {links.linkedin.label}
-        <svg
-          class="btn__arrow"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          aria-hidden="true"
-        >
-          <path d="M7 17 17 7M9 7h8v8"></path>
-        </svg>
-      </a>
     </nav>
   </div>
 </header>
@@ -110,76 +81,9 @@ const currentPath = Astro.url.pathname;
   .site-nav__inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
+    /* Only the toggle is in normal flow on mobile — pin it to the right. */
+    justify-content: flex-end;
     min-block-size: var(--nav-h);
-  }
-
-  /* -------------------------------------------------------------- brand -- */
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    flex: none;
-    z-index: 2;
-  }
-
-  .brand__mark {
-    display: grid;
-    place-items: center;
-    inline-size: 2.5rem;
-    block-size: 2.5rem;
-    background: var(--grad-brand-diag);
-    color: var(--c-white);
-    font-size: 0.9rem;
-    font-weight: 900;
-    letter-spacing: 0.02em;
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .brand:hover .brand__mark {
-    transform: rotate(-6deg) scale(1.05);
-  }
-
-  .brand__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-
-  .brand__name {
-    font-size: 0.95rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
-    color: var(--c-white);
-    transition: color var(--dur) var(--ease-out);
-  }
-
-  .brand__role {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgb(255 255 255 / 70%);
-    transition: color var(--dur) var(--ease-out);
-  }
-
-  /* Hide the wordmark on the narrowest phones; the tile alone reads fine. */
-  @media (max-width: 22.5rem) {
-    .brand__text {
-      display: none;
-    }
-  }
-
-  .site-nav[data-scrolled='true'] .brand__name,
-  .site-nav:has(#nav-toggle[aria-expanded='true']) .brand__name {
-    color: var(--c-black);
-  }
-
-  .site-nav[data-scrolled='true'] .brand__role,
-  .site-nav:has(#nav-toggle[aria-expanded='true']) .brand__role {
-    color: var(--c-muted);
   }
 
   /* ------------------------------------------------------------- toggle -- */
@@ -233,8 +137,6 @@ const currentPath = Astro.url.pathname;
     position: absolute;
     inset-block-start: 100%;
     inset-inline: 0;
-    display: grid;
-    gap: var(--space-md);
     padding: var(--space-md) var(--gutter) calc(var(--space-xl) + env(safe-area-inset-bottom));
     background: var(--c-white);
     box-shadow: var(--shadow-lg);
@@ -294,14 +196,15 @@ const currentPath = Astro.url.pathname;
     color: var(--c-blue);
   }
 
-  .nav-cta {
-    justify-self: start;
-  }
-
   /* -------------------------------------------------- panel (desktop) -- */
   @media (min-width: 60rem) {
     .nav-toggle {
       display: none;
+    }
+
+    /* With no logo or CTA the link row is the only content — centre it. */
+    .site-nav__inner {
+      justify-content: center;
     }
 
     .nav-panel {
@@ -310,9 +213,6 @@ const currentPath = Astro.url.pathname;
       visibility: visible;
       opacity: 1;
       transform: none;
-      display: flex;
-      align-items: center;
-      gap: clamp(1rem, 0.3rem + 1.6vw, 2.25rem);
       padding: 0;
       background: transparent;
       box-shadow: none;
@@ -324,7 +224,7 @@ const currentPath = Astro.url.pathname;
     .nav-list {
       display: flex;
       align-items: center;
-      gap: clamp(1rem, 0.3rem + 1.6vw, 2.25rem);
+      gap: clamp(1.25rem, 0.4rem + 2vw, 2.75rem);
     }
 
     .nav-link {
@@ -387,32 +287,6 @@ const currentPath = Astro.url.pathname;
     .site-nav[data-scrolled='true'] .nav-link:hover,
     .site-nav[data-scrolled='true'] .nav-link[aria-current='page'] {
       color: var(--c-black);
-    }
-
-    .nav-cta {
-      --btn-bg: transparent;
-      --btn-fg: var(--c-white);
-      border-color: rgb(255 255 255 / 55%);
-      min-block-size: 2.6rem;
-      padding: 0.65rem 1.2rem;
-    }
-
-    .nav-cta:hover {
-      --btn-bg: var(--c-white);
-      --btn-fg: var(--c-black);
-      border-color: var(--c-white);
-    }
-
-    .site-nav[data-scrolled='true'] .nav-cta {
-      --btn-bg: var(--c-ink);
-      --btn-fg: var(--c-white);
-      border-color: var(--c-ink);
-    }
-
-    .site-nav[data-scrolled='true'] .nav-cta:hover {
-      --btn-bg: var(--c-gold);
-      --btn-fg: var(--c-black);
-      border-color: var(--c-gold);
     }
   }
 </style>
