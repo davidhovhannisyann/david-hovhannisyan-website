@@ -1,0 +1,599 @@
+/* ===========================================================================
+   DESIGN SYSTEM
+   ---------------------------------------------------------------------------
+   Visual language adapted from usspeaking.com: Montserrat in heavy uppercase
+   with very tight leading, a cyan→purple gradient, a gold accent used sparingly,
+   hard-edged (zero-radius) buttons, and dot-grid / diagonal-ribbon motifs.
+
+   Responsive strategy:
+     · Mobile-first — the base rules ARE the phone layout; media queries only
+       ever add complexity for wider screens.
+     · Fluid type and spacing via clamp(), so sizes glide between breakpoints
+       instead of snapping.
+     · Intrinsic layouts (grid auto-fit + minmax) so card rows reflow on their
+       own without a breakpoint per column count.
+     · Container queries so a card adapts to the space IT occupies, not the
+       viewport — the same card works in a 3-up grid and a full-width slot.
+     · dvh for the hero, so mobile browser chrome collapsing doesn't cause jump.
+     · Safe-area insets so content clears notches and home indicators.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- tokens -- */
+:root {
+  /* Brand palette, sampled from the reference site */
+  --c-blue: #0094c6;
+  --c-purple: #9747ff;
+  --c-gold: #d4af37;
+  --c-teal: #11beb3;
+  --c-pink: #f70492;
+  --c-green: #43bc9a;
+
+  /* Neutrals */
+  --c-ink: #2f2d2e;
+  --c-black: #141414;
+  --c-white: #ffffff;
+  --c-paper: #f4f4f4;
+  --c-line: #d6d6d6;
+  --c-muted: #6b6869;
+
+  /* Signature gradient */
+  --grad-brand: linear-gradient(90deg, var(--c-blue) 0%, var(--c-purple) 100%);
+  --grad-brand-diag: linear-gradient(135deg, var(--c-blue) 0%, var(--c-purple) 100%);
+
+  /* Per-section accents. Each page sets --accent on <body>. */
+  --accent: var(--c-gold);
+  --accent-ink: var(--c-black);
+
+  /* Typography */
+  --font-sans: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+
+  /* Fluid type scale — min is the 360px value, max the 1440px value.
+     The display cap is tuned so the hero's longest line ("don't have to")
+     still fits its column on a 1280px screen without re-wrapping. */
+  --fs-display: clamp(2.5rem, 1.5rem + 4.4vw, 4.5rem);
+  --fs-h1: clamp(2rem, 1.25rem + 3.4vw, 4rem);
+  --fs-h2: clamp(1.625rem, 1.2rem + 1.9vw, 2.75rem);
+  --fs-h3: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.75rem;
+
+  /* Spacing */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  /* Fluid vertical rhythm between major sections */
+  --space-section: clamp(3.5rem, 2rem + 6.5vw, 7.5rem);
+  /* Fluid page gutter */
+  --gutter: clamp(1.25rem, 0.6rem + 2.6vw, 3rem);
+
+  --maxw: 1200px;
+  --maxw-prose: 68ch;
+  --nav-h: 4.5rem;
+
+  --shadow-sm: 0 1px 2px rgb(20 20 20 / 6%), 0 2px 8px rgb(20 20 20 / 5%);
+  --shadow-md: 0 4px 12px rgb(20 20 20 / 8%), 0 12px 32px rgb(20 20 20 / 8%);
+  --shadow-lg: 0 12px 28px rgb(20 20 20 / 12%), 0 28px 64px rgb(20 20 20 / 12%);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 220ms;
+}
+
+/* Accent themes, applied per page via <body data-accent="..."> */
+body[data-accent='qa'] {
+  --accent: var(--c-teal);
+  --accent-ink: var(--c-black);
+}
+body[data-accent='creative'] {
+  --accent: var(--c-pink);
+  --accent-ink: var(--c-white);
+}
+body[data-accent='development'] {
+  --accent: var(--c-blue);
+  --accent-ink: var(--c-white);
+}
+
+/* ----------------------------------------------------------------- reset -- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Suppress the grey/blue flash iOS and Android paint over tapped controls. */
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+  /* Anchor targets clear the fixed nav. */
+  scroll-padding-top: calc(var(--nav-h) + 1rem);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  color: var(--c-ink);
+  background: var(--c-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Guard against a single long word forcing a horizontal scrollbar. */
+  overflow-wrap: break-word;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------- headings -- */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.display {
+  font-size: var(--fs-display);
+  font-weight: 900;
+  line-height: 0.94;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+.h1 {
+  font-size: var(--fs-h1);
+  text-transform: uppercase;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+.h2 {
+  font-size: var(--fs-h2);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.h3 {
+  font-size: var(--fs-h3);
+}
+
+/* Small uppercase label above a heading */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.eyebrow::before {
+  content: '';
+  inline-size: 1.75rem;
+  block-size: 2px;
+  background: var(--accent);
+  flex: none;
+}
+
+.eyebrow--light {
+  color: rgb(255 255 255 / 82%);
+}
+
+.lead {
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--c-muted);
+  max-inline-size: var(--maxw-prose);
+}
+
+.text-gold {
+  color: var(--c-gold);
+}
+
+.text-gradient {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------- layout -- */
+.container {
+  inline-size: 100%;
+  max-inline-size: var(--maxw);
+  margin-inline: auto;
+  /* Respect notch / rounded-corner insets on phones held in landscape. */
+  padding-inline: max(var(--gutter), env(safe-area-inset-left));
+}
+
+.section {
+  padding-block: var(--space-section);
+}
+
+.section--tight {
+  padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+}
+
+.section--paper {
+  background: var(--c-paper);
+}
+
+.section--dark {
+  background: var(--c-black);
+  color: var(--c-white);
+}
+
+.stack > * + * {
+  margin-block-start: var(--flow, var(--space-md));
+}
+
+/* Intrinsic card grid: columns are decided by available space, not by a
+   breakpoint ladder. `auto-fit` collapses empty tracks so a lone card in a
+   3-up grid still fills the row. */
+.grid-cards {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 1.75rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+}
+
+.grid-cards--wide {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+}
+
+/* Narrower minimum so short cards (skills, toolkit) pack more per row
+   instead of leaving a stranded item alone on a final row. */
+.grid-cards--tight {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+}
+
+/* Section heading block: label + title + optional description */
+.section-head {
+  max-inline-size: var(--maxw-prose);
+  margin-block-end: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+}
+
+.section-head > * + * {
+  margin-block-start: var(--space-md);
+}
+
+/* --------------------------------------------------------------- buttons -- */
+/* Hard-edged, uppercase, chunky — straight from the reference site. */
+.btn {
+  --btn-bg: var(--c-ink);
+  --btn-fg: var(--c-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  /* 44px min height keeps it a comfortable touch target. */
+  min-block-size: 2.875rem;
+  padding: 0.9rem 1.6rem;
+  border: 2px solid transparent;
+  border-radius: 0;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+
+.btn:hover {
+  --btn-bg: var(--c-gold);
+  --btn-fg: var(--c-black);
+  transform: translateY(-2px);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--c-white);
+  border-color: rgb(255 255 255 / 55%);
+}
+
+.btn--ghost:hover {
+  --btn-bg: var(--c-white);
+  --btn-fg: var(--c-black);
+  border-color: var(--c-white);
+}
+
+.btn--outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--c-ink);
+  border-color: var(--c-ink);
+}
+
+.btn--outline:hover {
+  --btn-bg: var(--c-ink);
+  --btn-fg: var(--c-white);
+}
+
+.btn__arrow {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.btn:hover .btn__arrow {
+  transform: translateX(3px);
+}
+
+/* Text link with an accent underline that wipes in on hover */
+.link-underline {
+  position: relative;
+  font-weight: 600;
+  padding-block-end: 2px;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* ------------------------------------------------------------------ chips -- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--c-line);
+  background: var(--c-white);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.chip--accent {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--c-white));
+  color: color-mix(in srgb, var(--accent) 78%, var(--c-black));
+}
+
+.chip--live {
+  border-color: color-mix(in srgb, var(--c-green) 50%, transparent);
+  background: color-mix(in srgb, var(--c-green) 12%, var(--c-white));
+  color: #1e7a63;
+}
+
+.chip--live::before {
+  content: '';
+  inline-size: 0.45rem;
+  block-size: 0.45rem;
+  border-radius: 50%;
+  background: var(--c-green);
+  animation: pulse 2.4s var(--ease-out) infinite;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+/* ------------------------------------------------------------- decoration -- */
+/* Halftone dot grid — the reference site's signature texture. */
+.dots {
+  --dot-color: rgb(255 255 255 / 45%);
+  --dot-size: 2px;
+  --dot-gap: 14px;
+  background-image: radial-gradient(
+    var(--dot-color) var(--dot-size),
+    transparent var(--dot-size)
+  );
+  background-size: var(--dot-gap) var(--dot-gap);
+  pointer-events: none;
+}
+
+.dots--ink {
+  --dot-color: rgb(47 45 46 / 18%);
+}
+
+/* Diagonal gold ribbon sweeping across a section. */
+.ribbon {
+  position: absolute;
+  inset-block: -25%;
+  inline-size: clamp(5rem, 14vw, 13rem);
+  background: var(--c-gold);
+  transform: skewX(-22deg);
+  pointer-events: none;
+}
+
+/* Thin gradient rule used as a section divider. */
+.rule-gradient {
+  block-size: 4px;
+  inline-size: 4.5rem;
+  background: var(--grad-brand);
+}
+
+/* ------------------------------------------------------------------ cards -- */
+.card {
+  /* Establishes a container so children can respond to the CARD's width
+     rather than the viewport's — the same card works 3-up and full-width. */
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-white);
+  border: 1px solid var(--c-line);
+  transition: transform var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+
+.card--hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--c-line));
+}
+
+/* -------------------------------------------------------------- timeline -- */
+/* Vertical rail behind the RoleCard nodes. Shared by the QA and Development
+   pages, so it lives here rather than in either page's scoped styles. */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1.4vw, 2rem);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  /* Stops short at both ends so the rail runs node-to-node, not edge-to-edge. */
+  inset-block: 2.5rem 2.5rem;
+  inset-inline-start: clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem);
+  inline-size: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 18%, transparent)
+  );
+  transform: translateX(-50%);
+}
+
+/* ------------------------------------------------------- focus & a11y -- */
+:focus-visible {
+  outline: 3px solid var(--c-gold);
+  outline-offset: 3px;
+}
+
+/* Visible only once focused — first stop for keyboard users. */
+.skip-link {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--c-black);
+  color: var(--c-white);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  transform: translateY(-120%);
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------- entrance anim -- */
+/* Elements marked [data-reveal] fade up when scrolled into view (see Base
+   layout's IntersectionObserver). They start visible, so the site is fully
+   readable if JS never runs. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 620ms var(--ease-out), transform 620ms var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Honour the OS "reduce motion" setting everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ print -- */
+@media print {
+  .site-nav,
+  .site-footer,
+  .hero__art {
+    display: none !important;
+  }
+
+  body {
+    color: #000;
+  }
+}

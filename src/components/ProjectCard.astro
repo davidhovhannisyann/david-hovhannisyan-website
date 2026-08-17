@@ -1,0 +1,158 @@
+---
+/**
+ * A shipped Steam title: store capsule art, blurb, genre chips and a link out
+ * to the store page. Cover art and metadata come from the Steam storefront API.
+ */
+import type { Project } from '../data/projects';
+import { url } from '../lib/url';
+
+interface Props {
+  project: Project;
+  delay?: number;
+}
+
+const { project, delay = 0 } = Astro.props;
+---
+
+<article class="proj card card--hoverable" data-reveal style={`--reveal-delay:${delay}ms`}>
+  <div class="proj__cover">
+    <img
+      src={url(project.cover)}
+      alt={`${project.name} store artwork`}
+      loading="lazy"
+      decoding="async"
+      width="460"
+      height="215"
+    />
+    <span class="proj__platform">Steam</span>
+  </div>
+
+  <div class="proj__body">
+    <h3 class="proj__name">
+      <a class="proj__link" href={project.storeUrl} target="_blank" rel="noopener noreferrer">
+        {project.name}
+      </a>
+    </h3>
+
+    <p class="proj__dev">
+      by {project.developer} · {project.releaseDate}
+    </p>
+
+    <p class="proj__blurb">{project.blurb}</p>
+
+    <ul class="chip-row proj__genres">
+      {project.genres.map((genre) => <li class="chip">{genre}</li>)}
+    </ul>
+
+    <p class="proj__cta" aria-hidden="true">
+      View on Steam
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M7 17 17 7M9 7h8v8"></path>
+      </svg>
+    </p>
+  </div>
+</article>
+
+<style>
+  .proj {
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  .proj__cover {
+    position: relative;
+    overflow: hidden;
+    /* Matches the 460×215 Steam capsule, so nothing is cropped. */
+    aspect-ratio: 460 / 215;
+    background: var(--c-paper);
+  }
+
+  .proj__cover img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .proj:hover .proj__cover img {
+    transform: scale(1.04);
+  }
+
+  .proj__platform {
+    position: absolute;
+    inset-block-start: 0.6rem;
+    inset-inline-start: 0.6rem;
+    padding: 0.25rem 0.6rem;
+    background: rgb(20 20 20 / 82%);
+    color: var(--c-white);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .proj__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-xs);
+    padding: clamp(1.1rem, 0.9rem + 0.8vw, 1.6rem);
+  }
+
+  .proj__name {
+    font-size: var(--fs-h3);
+    line-height: 1.2;
+  }
+
+  .proj__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .proj__link:hover {
+    color: var(--accent);
+  }
+
+  .proj__dev {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .proj__blurb {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--c-muted);
+  }
+
+  .proj__genres {
+    margin-block-start: auto;
+    padding-block-start: var(--space-sm);
+  }
+
+  .proj__cta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-block-start: var(--space-sm);
+    padding-block-start: var(--space-sm);
+    border-block-start: 1px solid var(--c-line);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .proj__cta svg {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .proj:hover .proj__cta svg {
+    transform: translate(3px, -3px);
+  }
+</style>

@@ -1,0 +1,86 @@
+---
+/**
+ * Shared page shell: <head> metadata, fonts, nav, footer, and the scroll-reveal
+ * observer. Every page renders through this.
+ */
+import '@fontsource-variable/montserrat';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+import type { AccentKey } from '../data/site';
+
+interface Props {
+  /** Page title; the site name is appended automatically. */
+  title: string;
+  description?: string;
+  /** Sets --accent for the page, tinting chips, rules and hover states. */
+  accent?: AccentKey;
+}
+
+const { title, description = site.description, accent } = Astro.props;
+
+const fullTitle = `${title} — ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href={canonical} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#0094c6" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+
+    <script is:inline>
+      // Marks the document as JS-capable so the reveal animation can hide
+      // elements up front. Without JS nothing is ever hidden.
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+
+  <body data-accent={accent}>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Fade elements up as they enter the viewport. Purely decorative — the
+      // CSS only hides them when `html.js` is present and the visitor has not
+      // asked for reduced motion.
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+
+      if (reduced || !('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        targets.forEach((el) => observer.observe(el));
+      }
+    </script>
+  </body>
+</html>

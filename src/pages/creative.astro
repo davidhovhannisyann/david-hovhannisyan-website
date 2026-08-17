@@ -1,0 +1,31 @@
+---
+/** Creative page — video editing and design work. Placeholder until the reel exists. */
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ComingSoon from '../components/ComingSoon.astro';
+---
+
+<Base
+  title="Creative"
+  accent="creative"
+  description="Video editing and design work by David Hovhannisyan — coming soon."
+>
+  <PageHeader
+    eyebrow="Creative"
+    title="Cuts, edits<br />and everything after"
+    lead="The other half of the work: video editing, motion and design. This section is still being put together."
+    meta={['Premiere Pro', 'Photoshop', 'In progress']}
+  />
+
+  <ComingSoon
+    heading="The reel is still rendering"
+    blurb="Editing work has been a constant alongside QA, but none of it is written up yet. This page will hold the finished pieces rather than a list of promises."
+    planned={[
+      'A short showreel of edited pieces',
+      'Selected projects with the brief, the approach and the result',
+      'Thumbnail and graphic design work made in Photoshop',
+      'Breakdowns of how specific edits were put together',
+    ]}
+    tools={['Adobe Premiere Pro', 'Adobe Photoshop']}
+  />
+</Base>

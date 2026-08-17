@@ -1,0 +1,180 @@
+---
+/**
+ * "Latest from this section" card used on the landing page. The whole card is
+ * clickable via a stretched link on the heading, which keeps a single, sensibly
+ * labelled link in the accessibility tree rather than wrapping everything in <a>.
+ */
+import type { Highlight } from '../data/highlights';
+import { url } from '../lib/url';
+
+interface Props {
+  highlight: Highlight;
+  /** Staggers the scroll-reveal so the row animates in sequence. */
+  delay?: number;
+}
+
+const { highlight, delay = 0 } = Astro.props;
+const { accent, section, href, kicker, headline, body, meta, comingSoon, cta } = highlight;
+---
+
+<article
+  class="hl card card--hoverable"
+  data-accent={accent}
+  data-reveal
+  style={`--reveal-delay:${delay}ms`}
+>
+  <div class="hl__bar" aria-hidden="true"></div>
+
+  <div class="hl__body">
+    <div class="hl__top">
+      <span class="hl__section">{section}</span>
+      <span class={comingSoon ? 'chip' : 'chip chip--live'}>
+        {comingSoon ? 'Coming soon' : 'Active'}
+      </span>
+    </div>
+
+    <p class="hl__kicker">{kicker}</p>
+
+    <h3 class="hl__headline">
+      <a class="hl__link" href={url(href)}>{headline}</a>
+    </h3>
+
+    <p class="hl__text">{body}</p>
+
+    <ul class="chip-row hl__meta">
+      {meta.map((item) => <li class="chip">{item}</li>)}
+    </ul>
+
+    <p class="hl__cta" aria-hidden="true">
+      {cta}
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <path d="M5 12h14M13 5l7 7-7 7"></path>
+      </svg>
+    </p>
+  </div>
+</article>
+
+<style>
+  /* Each card carries its own accent so a row of them reads as three
+     distinct sections rather than three copies. */
+  .hl[data-accent='qa'] {
+    --accent: var(--c-teal);
+  }
+  .hl[data-accent='creative'] {
+    --accent: var(--c-pink);
+  }
+  .hl[data-accent='development'] {
+    --accent: var(--c-blue);
+  }
+
+  .hl {
+    /* Cards in a row match heights; the CTA still pins to the bottom. */
+    block-size: 100%;
+  }
+
+  .hl__bar {
+    block-size: 5px;
+    background: var(--accent);
+  }
+
+  .hl__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-sm);
+    padding: clamp(1.25rem, 1rem + 1vw, 1.9rem);
+  }
+
+  .hl__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .hl__section {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .hl__kicker {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .hl__headline {
+    font-size: var(--fs-h3);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Stretched link: the anchor covers the whole card, so the entire surface
+     is clickable while the link text stays descriptive. */
+  .hl__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .hl__link:hover {
+    color: var(--accent);
+  }
+
+  .hl__text {
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--c-muted);
+  }
+
+  .hl__meta {
+    margin-block-start: auto;
+    padding-block-start: var(--space-xs);
+  }
+
+  .hl__cta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-block-start: var(--space-sm);
+    border-block-start: 1px solid var(--c-line);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .hl__cta svg {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .hl:hover .hl__cta svg {
+    transform: translateX(4px);
+  }
+
+  /* Container query: when the card itself is wide (e.g. a single card on a
+     tablet), give the text more breathing room — this reacts to the CARD's
+     width, not the viewport's. */
+  @container (min-width: 26rem) {
+    .hl__body {
+      padding: 2.25rem;
+    }
+
+    .hl__text {
+      font-size: var(--fs-body);
+    }
+  }
+</style>

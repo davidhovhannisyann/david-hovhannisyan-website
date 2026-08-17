@@ -1,0 +1,482 @@
+---
+/**
+ * Site navigation.
+ *
+ * Desktop (≥60rem): a horizontal bar — logo left, links right.
+ * Mobile (<60rem):  the links collapse into a toggleable dropdown panel driven
+ *                   by a hamburger button.
+ *
+ * The bar starts transparent over the gradient header and turns solid white
+ * once the page is scrolled, which is why every page begins with a coloured
+ * header block.
+ *
+ * Accessibility: the toggle is a real <button> with aria-expanded/aria-controls,
+ * Escape closes the panel and returns focus to the toggle, focus is trapped
+ * inside the open panel, and background scrolling is locked while it is open.
+ */
+import { nav, site, links } from '../data/site';
+import { url, isActive } from '../lib/url';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-nav" id="site-nav" data-scrolled="false">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="site-nav__inner container">
+    <a class="brand" href={url('/')} aria-label={`${site.name} — home`}>
+      <span class="brand__mark" aria-hidden="true">{site.initials}</span>
+      <span class="brand__text">
+        <span class="brand__name">{site.name}</span>
+        <span class="brand__role">{site.role}</span>
+      </span>
+    </a>
+
+    <button
+      class="nav-toggle"
+      id="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-panel"
+    >
+      <span class="nav-toggle__bars" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+      <span class="visually-hidden">Menu</span>
+    </button>
+
+    <nav class="nav-panel" id="nav-panel" aria-label="Main">
+      <ul class="nav-list">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                class="nav-link"
+                href={url(item.href)}
+                data-accent={item.accent}
+                aria-current={isActive(currentPath, item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a
+        class="btn nav-cta"
+        href={links.linkedin.href}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {links.linkedin.label}
+        <svg
+          class="btn__arrow"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          aria-hidden="true"
+        >
+          <path d="M7 17 17 7M9 7h8v8"></path>
+        </svg>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 100;
+    /* Clear the notch on landscape iPhones. */
+    padding-inline: max(0px, env(safe-area-inset-left));
+    transition: background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+
+  /* Solid state, applied by the scroll listener and whenever the mobile
+     panel is open (an open dropdown needs an opaque backdrop). */
+  .site-nav[data-scrolled='true'],
+  .site-nav:has(#nav-toggle[aria-expanded='true']) {
+    background: var(--c-white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .site-nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    min-block-size: var(--nav-h);
+  }
+
+  /* -------------------------------------------------------------- brand -- */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex: none;
+    z-index: 2;
+  }
+
+  .brand__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    background: var(--grad-brand-diag);
+    color: var(--c-white);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .brand:hover .brand__mark {
+    transform: rotate(-6deg) scale(1.05);
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .brand__name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--c-white);
+    transition: color var(--dur) var(--ease-out);
+  }
+
+  .brand__role {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 70%);
+    transition: color var(--dur) var(--ease-out);
+  }
+
+  /* Hide the wordmark on the narrowest phones; the tile alone reads fine. */
+  @media (max-width: 22.5rem) {
+    .brand__text {
+      display: none;
+    }
+  }
+
+  .site-nav[data-scrolled='true'] .brand__name,
+  .site-nav:has(#nav-toggle[aria-expanded='true']) .brand__name {
+    color: var(--c-black);
+  }
+
+  .site-nav[data-scrolled='true'] .brand__role,
+  .site-nav:has(#nav-toggle[aria-expanded='true']) .brand__role {
+    color: var(--c-muted);
+  }
+
+  /* ------------------------------------------------------------- toggle -- */
+  .nav-toggle {
+    display: grid;
+    place-items: center;
+    /* 44×44 — the minimum comfortable touch target. */
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .nav-toggle__bars {
+    display: grid;
+    gap: 5px;
+    inline-size: 1.5rem;
+  }
+
+  .nav-toggle__bars span {
+    display: block;
+    block-size: 2px;
+    inline-size: 100%;
+    background: var(--c-white);
+    transition: transform var(--dur) var(--ease-out),
+      opacity var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
+  }
+
+  .site-nav[data-scrolled='true'] .nav-toggle__bars span,
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars span {
+    background: var(--c-black);
+  }
+
+  /* Hamburger morphs into an X */
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* --------------------------------------------------- panel (mobile) -- */
+  /* Mobile-first: the panel is a dropdown sheet below the bar. */
+  .nav-panel {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--gutter) calc(var(--space-xl) + env(safe-area-inset-bottom));
+    background: var(--c-white);
+    box-shadow: var(--shadow-lg);
+    border-block-start: 1px solid var(--c-line);
+
+    /* Collapsed by default. visibility keeps it out of the tab order. */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+    transition: opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out), visibility var(--dur) linear;
+    /* Very short phones can still reach every item. */
+    max-block-size: calc(100dvh - var(--nav-h));
+    overflow-y: auto;
+  }
+
+  .site-nav:has(#nav-toggle[aria-expanded='true']) .nav-panel {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-list {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 0.85rem 0.25rem;
+    border-block-end: 1px solid var(--c-line);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--c-black);
+    transition: color var(--dur) var(--ease-out),
+      padding-inline-start var(--dur) var(--ease-out);
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: var(--c-blue);
+    padding-inline-start: 0.75rem;
+  }
+
+  .nav-link[data-accent='qa']:hover,
+  .nav-link[data-accent='qa'][aria-current='page'] {
+    color: var(--c-teal);
+  }
+  .nav-link[data-accent='creative']:hover,
+  .nav-link[data-accent='creative'][aria-current='page'] {
+    color: var(--c-pink);
+  }
+  .nav-link[data-accent='development']:hover,
+  .nav-link[data-accent='development'][aria-current='page'] {
+    color: var(--c-blue);
+  }
+
+  .nav-cta {
+    justify-self: start;
+  }
+
+  /* -------------------------------------------------- panel (desktop) -- */
+  @media (min-width: 60rem) {
+    .nav-toggle {
+      display: none;
+    }
+
+    .nav-panel {
+      /* Unwind every mobile-sheet property back to an inline row. */
+      position: static;
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 0.3rem + 1.6vw, 2.25rem);
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+      border: 0;
+      max-block-size: none;
+      overflow: visible;
+    }
+
+    .nav-list {
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 0.3rem + 1.6vw, 2.25rem);
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 0.35rem 0;
+      border: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--c-white);
+    }
+
+    .nav-link:hover,
+    .nav-link[aria-current='page'] {
+      padding-inline-start: 0;
+      color: var(--c-white);
+    }
+
+    /* The mobile rules tint the active link with its section accent, which is
+       right on a white sheet but not over the gradient — Development's blue on
+       a blue background all but disappears. Keep desktop links white and let
+       the underline below carry the accent. */
+    .nav-link[data-accent]:hover,
+    .nav-link[data-accent][aria-current='page'] {
+      color: var(--c-white);
+    }
+
+    /* Accent underline wipes in on hover / marks the current page. */
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+      block-size: 3px;
+      background: var(--c-gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--dur) var(--ease-out);
+    }
+
+    .nav-link:hover::after,
+    .nav-link[aria-current='page']::after {
+      transform: scaleX(1);
+    }
+
+    .nav-link[data-accent='qa']::after {
+      background: var(--c-teal);
+    }
+    .nav-link[data-accent='creative']::after {
+      background: var(--c-pink);
+    }
+    .nav-link[data-accent='development']::after {
+      background: var(--c-blue);
+    }
+
+    /* Once the bar goes solid, links flip to dark text. */
+    .site-nav[data-scrolled='true'] .nav-link {
+      color: var(--c-ink);
+    }
+
+    .site-nav[data-scrolled='true'] .nav-link:hover,
+    .site-nav[data-scrolled='true'] .nav-link[aria-current='page'] {
+      color: var(--c-black);
+    }
+
+    .nav-cta {
+      --btn-bg: transparent;
+      --btn-fg: var(--c-white);
+      border-color: rgb(255 255 255 / 55%);
+      min-block-size: 2.6rem;
+      padding: 0.65rem 1.2rem;
+    }
+
+    .nav-cta:hover {
+      --btn-bg: var(--c-white);
+      --btn-fg: var(--c-black);
+      border-color: var(--c-white);
+    }
+
+    .site-nav[data-scrolled='true'] .nav-cta {
+      --btn-bg: var(--c-ink);
+      --btn-fg: var(--c-white);
+      border-color: var(--c-ink);
+    }
+
+    .site-nav[data-scrolled='true'] .nav-cta:hover {
+      --btn-bg: var(--c-gold);
+      --btn-fg: var(--c-black);
+      border-color: var(--c-gold);
+    }
+  }
+</style>
+
+<script>
+  const bar = document.getElementById('site-nav')!;
+  const toggle = document.getElementById('nav-toggle') as HTMLButtonElement;
+  const panel = document.getElementById('nav-panel')!;
+
+  const DESKTOP = window.matchMedia('(min-width: 60rem)');
+
+  const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+  function setOpen(open: boolean) {
+    toggle.setAttribute('aria-expanded', String(open));
+    // Stop the page behind the dropdown from scrolling while it is open.
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  toggle.addEventListener('click', () => setOpen(!isOpen()));
+
+  // Escape closes the panel and hands focus back to the toggle.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Tapping a link navigates; close first so the panel isn't mid-transition.
+  panel.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a') && isOpen()) setOpen(false);
+  });
+
+  // Clicking outside the header dismisses the panel.
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !bar.contains(e.target as Node)) setOpen(false);
+  });
+
+  // Keep focus inside the open panel.
+  panel.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !isOpen()) return;
+    const focusable = panel.querySelectorAll<HTMLElement>('a[href], button');
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      toggle.focus();
+    }
+  });
+
+  // Resizing up to desktop must not leave the body scroll-locked.
+  DESKTOP.addEventListener('change', (e) => {
+    if (e.matches && isOpen()) setOpen(false);
+  });
+
+  // Swap the bar to its solid state once the header block is behind it.
+  const onScroll = () => {
+    bar.dataset.scrolled = String(window.scrollY > 24);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

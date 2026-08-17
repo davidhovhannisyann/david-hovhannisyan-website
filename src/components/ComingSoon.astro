@@ -1,0 +1,230 @@
+---
+/**
+ * Placeholder panel for sections that have no content yet (Creative,
+ * Development). Designed to read as "deliberately not finished" rather than
+ * "broken" — it still tells the visitor what is coming and where to go next.
+ */
+import { url } from '../lib/url';
+import { links } from '../data/site';
+
+interface Props {
+  /** What this section will eventually hold. */
+  heading: string;
+  blurb: string;
+  /** Bullet list of planned content. */
+  planned: string[];
+  /** Tools/skills already in play, shown as chips. */
+  tools?: string[];
+}
+
+const { heading, blurb, planned, tools = [] } = Astro.props;
+---
+
+<section class="section">
+  <div class="container">
+    <div class="soon" data-reveal>
+      <div class="soon__art" aria-hidden="true">
+        <span class="soon__dots dots dots--ink"></span>
+        <span class="soon__ribbon"></span>
+        <span class="soon__glyph">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7.5V12l3 2"></path>
+          </svg>
+        </span>
+      </div>
+
+      <div class="soon__body">
+        <p class="eyebrow">Work in progress</p>
+        <h2 class="h2 soon__heading">{heading}</h2>
+        <p class="lead">{blurb}</p>
+
+        <div class="soon__progress" role="presentation">
+          <span class="soon__bar"></span>
+        </div>
+
+        <h3 class="soon__label">What's landing here</h3>
+        <ul class="soon__list">
+          {planned.map((item) => <li>{item}</li>)}
+        </ul>
+
+        {
+          tools.length > 0 && (
+            <ul class="chip-row soon__tools">
+              {tools.map((tool) => (
+                <li class="chip chip--accent">{tool}</li>
+              ))}
+            </ul>
+          )
+        }
+
+        <div class="soon__actions">
+          <a class="btn btn--outline" href={url('/qa')}>See my QA work instead</a>
+          <a
+            class="btn"
+            href={links.linkedin.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Follow along on LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .soon {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--c-line);
+    background: var(--c-white);
+    overflow: hidden;
+  }
+
+  /* Art panel sits above the copy on phones, beside it from tablet up. */
+  @media (min-width: 52rem) {
+    .soon {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      align-items: stretch;
+    }
+  }
+
+  .soon__art {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    min-block-size: clamp(11rem, 8rem + 16vw, 100%);
+    background: color-mix(in srgb, var(--accent) 12%, var(--c-paper));
+  }
+
+  .soon__dots {
+    position: absolute;
+    inset: 0;
+    --dot-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    --dot-gap: 16px;
+  }
+
+  .soon__ribbon {
+    position: absolute;
+    inset-block: -30%;
+    inset-inline-start: 55%;
+    inline-size: 4.5rem;
+    background: color-mix(in srgb, var(--accent) 28%, transparent);
+    transform: skewX(-22deg);
+  }
+
+  .soon__glyph {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: clamp(4.5rem, 3rem + 8vw, 7rem);
+    aspect-ratio: 1;
+    color: var(--accent);
+  }
+
+  .soon__glyph svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .soon__glyph {
+      animation: tick 4s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes tick {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.06);
+      opacity: 1;
+    }
+  }
+
+  .soon__body {
+    padding: clamp(1.5rem, 1rem + 2.6vw, 3rem);
+  }
+
+  .soon__body > * + * {
+    margin-block-start: var(--space-md);
+  }
+
+  .soon__heading {
+    max-inline-size: 18ch;
+  }
+
+  /* Indeterminate bar — signals "in progress" without faking a percentage. */
+  .soon__progress {
+    block-size: 5px;
+    background: var(--c-paper);
+    overflow: hidden;
+  }
+
+  .soon__bar {
+    display: block;
+    block-size: 100%;
+    inline-size: 38%;
+    background: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .soon__bar {
+      animation: slide 2.6s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes slide {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(340%);
+    }
+  }
+
+  .soon__label {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .soon__list {
+    display: grid;
+    gap: 0.55rem;
+    font-size: var(--fs-sm);
+  }
+
+  .soon__list li {
+    position: relative;
+    padding-inline-start: 1.5rem;
+    color: var(--c-muted);
+  }
+
+  .soon__list li::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.55em;
+    inset-inline-start: 0;
+    inline-size: 8px;
+    block-size: 8px;
+    border: 2px solid var(--accent);
+  }
+
+  /* Equal-width buttons that sit side by side when there's room and stack
+     when there isn't — avoids two different content-sized buttons stacking. */
+  .soon__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-sm);
+    margin-block-start: var(--space-xl);
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+/** Landing page: hero, a strip of places worked, then the latest-from-each-section cards. */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import HighlightCard from '../components/HighlightCard.astro';
+import { highlights } from '../data/highlights';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const worked = [
+  { name: 'Rockbite Games', logo: '/images/logos/rockbite.png', href: 'https://rockbitegames.com' },
+  { name: 'Ngene', logo: '/images/logos/ngene.png', href: 'https://www.ngene.co' },
+  { name: 'Russian-Armenian University', logo: '/images/logos/rau.png', href: 'https://rau.am/en' },
+];
+---
+
+<Base title="Home" description={site.description}>
+  <Hero />
+
+  <!-- Places worked / studied -->
+  <section class="section--tight worked">
+    <div class="container">
+      <p class="worked__label">Worked &amp; studied at</p>
+      <ul class="worked__list">
+        {
+          worked.map((item) => (
+            <li>
+              <a
+                class="worked__item"
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={item.name}
+              >
+                <img
+                  src={url(item.logo)}
+                  alt={`${item.name} logo`}
+                  loading="lazy"
+                  decoding="async"
+                  width="180"
+                  height="70"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Latest from each section -->
+  <section class="section section--paper">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">The short version</p>
+        <h2 class="h2">Where I'm at<br /><span class="text-gradient">right now</span></h2>
+        <p class="lead">
+          Three things I spend my time on. Two of them have plenty to show already —
+          the third is catching up.
+        </p>
+      </div>
+
+      <div class="grid-cards grid-cards--wide">
+        {
+          highlights.map((highlight, i) => (
+            <HighlightCard highlight={highlight} delay={i * 90} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .worked {
+    border-block-end: 1px solid var(--c-line);
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .worked__label {
+    margin-block-end: var(--space-lg);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    text-align: center;
+  }
+
+  .worked__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 1rem + 4vw, 4.5rem);
+  }
+
+  .worked__item {
+    display: grid;
+    place-items: center;
+    /* Greyscale by default so the row reads as one calm band; colour on hover. */
+    filter: grayscale(1);
+    opacity: 0.55;
+    transition: filter var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out);
+  }
+
+  .worked__item:hover {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  .worked__item img {
+    block-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    inline-size: auto;
+    object-fit: contain;
+  }
+</style>

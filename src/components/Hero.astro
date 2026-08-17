@@ -1,0 +1,373 @@
+---
+/**
+ * Landing-page hero: full-bleed brand gradient, gold ribbon, dot texture, a
+ * heavy uppercase statement on the left and the portrait frame on the right.
+ *
+ * The frame is the photo slot — set `portrait` in src/data/site.ts and the
+ * abstract panel is replaced by the image with no other changes needed.
+ */
+import { site, portrait } from '../data/site';
+import { yearsExperience } from '../data/experience';
+import { projects } from '../data/projects';
+import { url } from '../lib/url';
+
+/* Values are kept to short numerals so the row stays inside the copy column and
+   clear of the gold ribbon — a long text value overruns into it and gold text
+   on gold becomes unreadable. */
+const stats = [
+  { value: `${yearsExperience}+`, label: 'Years in QA & engineering' },
+  { value: String(projects.length), label: 'Titles shipped on Steam' },
+  { value: '3', label: 'Platforms — iOS, Android, PC' },
+];
+---
+
+<section class="hero">
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__dots dots" aria-hidden="true"></div>
+  <span class="ribbon hero__ribbon" aria-hidden="true"></span>
+
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow eyebrow--light">{site.role} · {site.location}</p>
+
+      <h1 class="display hero__title">
+        I break games<br />
+        so players<br />
+        <span class="text-gold">don't have to</span>
+      </h1>
+
+      <p class="hero__lead">
+        Quality Assurance Engineer testing mobile and PC games from the first
+        build to the store release — test design, automation, API testing and
+        the crash reports nobody else wants to read.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn" href={url('/qa')}>
+          Explore my QA work
+          <svg
+            class="btn__arrow"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        <a class="btn btn--ghost" href={url('/about')}>About me</a>
+      </div>
+
+      <dl class="hero__stats">
+        {
+          stats.map((stat) => (
+            <div class="hero__stat">
+              <dt class="hero__stat-value">{stat.value}</dt>
+              <dd class="hero__stat-label">{stat.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="hero__art" aria-hidden={portrait ? undefined : 'true'}>
+      <div class="frame">
+        {
+          portrait ? (
+            <img
+              class="frame__photo"
+              src={url(portrait)}
+              alt={`${site.name}, ${site.role}`}
+              width="900"
+              height="1125"
+            />
+          ) : (
+            /* Placeholder panel shown until a photo is added. */
+            <div class="frame__placeholder">
+              <span class="frame__dots dots" />
+              <span class="frame__monogram">{site.initials}</span>
+              <span class="frame__caption">{site.role}</span>
+            </div>
+          )
+        }
+      </div>
+
+      <span class="float-chip float-chip--a">
+        <strong>Rockbite Games</strong>
+        <span>QA Engineer</span>
+      </span>
+      <span class="float-chip float-chip--b">
+        <strong>{projects.length} titles</strong>
+        <span>shipped on Steam</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--c-white);
+    /* Leaves room for the fixed nav and stays comfortable on short phones.
+       dvh keeps the height stable when mobile browser chrome collapses. */
+    padding-block: calc(var(--nav-h) + clamp(2.5rem, 1rem + 7vw, 6rem))
+      clamp(3rem, 1.5rem + 6vw, 6rem);
+    min-block-size: min(100dvh, 52rem);
+    display: grid;
+    align-items: center;
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    background: var(--grad-brand);
+  }
+
+  .hero__dots {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    --dot-color: rgb(255 255 255 / 22%);
+    --dot-gap: 18px;
+    mask-image: radial-gradient(120% 90% at 8% 12%, #000 0%, transparent 62%);
+  }
+
+  .hero__ribbon {
+    z-index: -2;
+    /* Sits clear of the copy column so gold text never lands on gold. */
+    inset-inline-start: 63%;
+    inline-size: clamp(6rem, 17vw, 16rem);
+    opacity: 0.92;
+  }
+
+  /* Below the breakpoint where the art shows there's no clear space left for
+     the ribbon — a translucent one just muddies the gradient, so drop it and
+     let the dot grid carry the texture. */
+  @media (max-width: 34.99rem) {
+    .hero__ribbon {
+      display: none;
+    }
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: clamp(2.5rem, 1rem + 6vw, 4.5rem);
+    align-items: center;
+  }
+
+  /* Side-by-side only once the art has room to be worth showing. */
+  @media (min-width: 60rem) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    }
+  }
+
+  /* ---------------------------------------------------------------- copy -- */
+  .hero__copy > * + * {
+    margin-block-start: clamp(1rem, 0.7rem + 1vw, 1.75rem);
+  }
+
+  .hero__title {
+    text-shadow: 0 2px 24px rgb(20 20 20 / 18%);
+  }
+
+  .hero__lead {
+    max-inline-size: 46ch;
+    font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
+    line-height: 1.6;
+    color: rgb(255 255 255 / 88%);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  /* On phones the buttons stack anyway — make them match width rather than
+     sit at two different content-driven sizes. */
+  @media (max-width: 30rem) {
+    .hero__actions {
+      display: grid;
+    }
+  }
+
+  .hero__actions .btn:first-child {
+    --btn-bg: var(--c-white);
+    --btn-fg: var(--c-black);
+  }
+
+  .hero__actions .btn:first-child:hover {
+    --btn-bg: var(--c-gold);
+    --btn-fg: var(--c-black);
+  }
+
+  .hero__stats {
+    display: grid;
+    gap: var(--space-md) var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+    /* The ribbon leans left as it descends, so the lowest block in the copy
+       column is the one at risk of running under it. Capping the width keeps
+       the whole row clear. */
+    max-inline-size: 34rem;
+    margin-block-start: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+    padding-block-start: clamp(1.25rem, 0.8rem + 1.4vw, 1.75rem);
+    border-block-start: 1px solid rgb(255 255 255 / 25%);
+  }
+
+  .hero__stat-value {
+    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--c-gold);
+  }
+
+  .hero__stat-label {
+    margin: 0.15rem 0 0;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 68%);
+  }
+
+  /* ----------------------------------------------------------------- art -- */
+  .hero__art {
+    position: relative;
+    justify-self: center;
+    inline-size: min(100%, 22rem);
+  }
+
+  @media (min-width: 60rem) {
+    .hero__art {
+      inline-size: min(100%, 25rem);
+    }
+  }
+
+  /* Hidden on small screens: the statement and CTAs matter more than
+     decoration when vertical space is scarce. */
+  @media (max-width: 34.99rem) {
+    .hero__art {
+      display: none;
+    }
+  }
+
+  .frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 35%);
+    background: rgb(20 20 20 / 22%);
+    box-shadow: var(--shadow-lg);
+    transform: rotate(-2.5deg);
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .hero__art:hover .frame {
+    transform: rotate(0deg);
+  }
+
+  .frame__photo {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .frame__placeholder {
+    position: relative;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.5rem;
+    block-size: 100%;
+    background: linear-gradient(160deg, rgb(20 20 20 / 55%), rgb(151 71 255 / 35%));
+  }
+
+  .frame__dots {
+    position: absolute;
+    inset: 0;
+    --dot-color: rgb(255 255 255 / 16%);
+    --dot-gap: 16px;
+  }
+
+  .frame__monogram {
+    font-size: clamp(4rem, 3rem + 8vw, 7rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(255 255 255 / 62%);
+  }
+
+  .frame__caption {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 72%);
+  }
+
+  /* Small cards that overlap the frame corners. */
+  .float-chip {
+    position: absolute;
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.7rem 1rem;
+    background: var(--c-white);
+    color: var(--c-black);
+    box-shadow: var(--shadow-md);
+  }
+
+  .float-chip strong {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .float-chip span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  .float-chip--a {
+    inset-block-start: 8%;
+    inset-inline-start: -1.25rem;
+    border-inline-start: 4px solid var(--c-teal);
+  }
+
+  .float-chip--b {
+    inset-block-end: 9%;
+    inset-inline-end: -1.25rem;
+    border-inline-start: 4px solid var(--c-gold);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .float-chip {
+      animation: bob 6s var(--ease-out) infinite;
+    }
+    .float-chip--b {
+      animation-delay: -3s;
+    }
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+</style>

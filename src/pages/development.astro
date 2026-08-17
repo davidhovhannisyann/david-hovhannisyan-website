@@ -1,0 +1,55 @@
+---
+/**
+ * Development page: engineering roles, plus a placeholder for the project
+ * write-ups that aren't ready yet.
+ */
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RoleCard from '../components/RoleCard.astro';
+import ComingSoon from '../components/ComingSoon.astro';
+import { rolesFor } from '../data/experience';
+
+const timeline = rolesFor('development');
+---
+
+<Base
+  title="Development"
+  accent="development"
+  description="Software development work by David Hovhannisyan — C++, CUDA and LabVIEW engineering at Ngene, internal tooling and automation in Java and Kotlin."
+>
+  <PageHeader
+    eyebrow="Development"
+    title="Tools, automation<br />and side projects"
+    lead="The engineering side of the work — GPU-accelerated toolkits in C++ and CUDA, internal testing tools in Java and Kotlin, and the things built for the fun of it."
+    meta={[`${timeline.length} roles`, 'C++ · CUDA · Java · Kotlin']}
+  />
+
+  <!-- Engineering roles -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Experience</p>
+        <h2 class="h2">Where I've built it</h2>
+      </div>
+
+      <ol class="timeline">
+        {timeline.map((role, i) => <RoleCard role={role} delay={i * 90} />)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Project write-ups still to come -->
+  <div class="section--paper">
+    <ComingSoon
+      heading="Project write-ups on the way"
+      blurb="The roles above cover the professional work. The individual projects — what each one does, how it was built and what came out of it — are still being written up."
+      planned={[
+        'Internal mobile testing tools built in Java and Kotlin',
+        'Selenium WebDriver automation frameworks and page-object patterns',
+        'CuLab and NGCV — the GPU and video toolkits worked on at Ngene',
+        'Personal side projects and experiments',
+      ]}
+      tools={['Java', 'Kotlin', 'C++', 'CUDA', 'Selenium WebDriver', 'LibGDX']}
+    />
+  </div>
+</Base>

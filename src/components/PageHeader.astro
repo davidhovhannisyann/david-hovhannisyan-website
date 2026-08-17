@@ -1,0 +1,121 @@
+---
+/**
+ * Gradient header band for the inner pages. Shorter than the landing hero but
+ * built from the same parts, so the fixed nav always starts over colour.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** Optional short facts rendered as chips under the lead. */
+  meta?: string[];
+}
+
+const { eyebrow, title, lead, meta = [] } = Astro.props;
+---
+
+<section class="page-header">
+  <div class="page-header__bg" aria-hidden="true"></div>
+  <div class="page-header__dots dots" aria-hidden="true"></div>
+  <span class="ribbon page-header__ribbon" aria-hidden="true"></span>
+
+  <div class="container page-header__inner">
+    <p class="eyebrow eyebrow--light">{eyebrow}</p>
+    <h1 class="h1 page-header__title" set:html={title} />
+    {lead && <p class="page-header__lead">{lead}</p>}
+    {
+      meta.length > 0 && (
+        <ul class="page-header__meta">
+          {meta.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--c-white);
+    padding-block: calc(var(--nav-h) + clamp(2.5rem, 1.5rem + 5vw, 5rem))
+      clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+  }
+
+  .page-header__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    background: var(--grad-brand);
+  }
+
+  .page-header__dots {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    --dot-color: rgb(255 255 255 / 20%);
+    --dot-gap: 18px;
+    mask-image: radial-gradient(110% 100% at 100% 0%, #000 0%, transparent 60%);
+  }
+
+  .page-header__ribbon {
+    z-index: -2;
+    inset-inline-end: 8%;
+    inline-size: clamp(4rem, 11vw, 10rem);
+    opacity: 0.85;
+  }
+
+  /* On phones the copy runs the full width, so pull the ribbon out to the edge
+     as a corner accent instead of letting it sit behind the lead text. */
+  @media (max-width: 47.99rem) {
+    .page-header__ribbon {
+      inset-inline-end: -3.5rem;
+    }
+  }
+
+  .page-header__inner > * + * {
+    margin-block-start: var(--space-md);
+  }
+
+  .page-header__title {
+    max-inline-size: 20ch;
+    text-shadow: 0 2px 20px rgb(20 20 20 / 16%);
+  }
+
+  .page-header__lead {
+    max-inline-size: 52ch;
+    font-size: clamp(1rem, 0.95rem + 0.35vw, 1.15rem);
+    line-height: 1.6;
+    color: rgb(255 255 255 / 88%);
+  }
+
+  .page-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-md);
+    margin-block-start: var(--space-lg);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 78%);
+  }
+
+  .page-header__meta li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  /* Gold bullet between items, but not before the first one. */
+  .page-header__meta li + li::before {
+    content: '';
+    inline-size: 5px;
+    block-size: 5px;
+    background: var(--c-gold);
+    flex: none;
+  }
+</style>

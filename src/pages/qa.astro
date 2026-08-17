@@ -1,0 +1,114 @@
+---
+/** QA page: full experience timeline, shipped Steam titles, and the QA toolkit. */
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RoleCard from '../components/RoleCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { rolesFor, yearsExperience } from '../data/experience';
+import { projects } from '../data/projects';
+import { skillGroups } from '../data/about';
+
+const timeline = rolesFor('qa');
+
+// The QA-relevant slice of the toolkit; the full list lives on the About page.
+const toolkitLabels = [
+  'Test Management',
+  'API Testing',
+  'Monitoring & Analytics',
+  'Programming & Automation',
+];
+const toolkit = toolkitLabels
+  .map((label) => skillGroups.find((group) => group.label === label))
+  .filter((group): group is NonNullable<typeof group> => Boolean(group));
+---
+
+<Base
+  title="QA"
+  accent="qa"
+  description="David Hovhannisyan's quality assurance experience — game testing at Rockbite Games, freelance QA for indie studios, and software engineering at Ngene."
+>
+  <PageHeader
+    eyebrow="Quality Assurance"
+    title="Finding the bugs<br />before players do"
+    lead="Test design, manual and automated execution, API testing and live stability monitoring across mobile and PC games — from indie one-person studios to a full production team."
+    meta={[
+      `${yearsExperience}+ years`,
+      `${timeline.length} roles`,
+      `${projects.length} shipped titles`,
+    ]}
+  />
+
+  <!-- Experience timeline -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Experience</p>
+        <h2 class="h2">Where I've done it</h2>
+      </div>
+
+      <ol class="timeline">
+        {timeline.map((role, i) => <RoleCard role={role} delay={i * 90} />)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Shipped titles -->
+  <section class="section section--paper">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Shipped</p>
+        <h2 class="h2">Titles out<br /><span class="text-gradient">in the wild</span></h2>
+        <p class="lead">
+          Games I supported through freelance QA that are now live on Steam. Each one
+          got the same treatment: regression passes, sanity checks, defect reports and
+          fix verification right up to release.
+        </p>
+      </div>
+
+      <div class="grid-cards grid-cards--wide">
+        {projects.map((project, i) => <ProjectCard project={project} delay={i * 90} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolkit -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Toolkit</p>
+        <h2 class="h2">What I work with</h2>
+      </div>
+
+      <div class="grid-cards grid-cards--tight">
+        {
+          toolkit.map((group, i) => (
+            <div class="tool card" data-reveal style={`--reveal-delay:${i * 70}ms`}>
+              <h3 class="tool__label">{group.label}</h3>
+              <ul class="chip-row">
+                {group.items.map((item) => (
+                  <li class="chip chip--accent">{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tool {
+    gap: var(--space-md);
+    padding: clamp(1.1rem, 0.9rem + 0.8vw, 1.6rem);
+    block-size: 100%;
+  }
+
+  .tool__label {
+    font-size: var(--fs-sm);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-black);
+  }
+</style>
