@@ -6,7 +6,7 @@
  * The frame is the photo slot — set `portrait` in src/data/site.ts and the
  * abstract panel is replaced by the image with no other changes needed.
  */
-import { site, portrait } from '../data/site';
+import { site, portrait, heroArt } from '../data/site';
 import { yearsExperience } from '../data/experience';
 import { projects, platforms } from '../data/projects';
 import { url } from '../lib/url';
@@ -73,10 +73,11 @@ const stats = [
       </dl>
     </div>
 
-    <div class="hero__art" aria-hidden={portrait ? undefined : 'true'}>
+    <div class="hero__art" aria-hidden={portrait || heroArt ? undefined : 'true'}>
       <div class="frame">
         {
           portrait ? (
+            /* A real photo fills the frame. */
             <img
               class="frame__photo"
               src={url(portrait)}
@@ -84,8 +85,21 @@ const stats = [
               width="900"
               height="1125"
             />
+          ) : heroArt ? (
+            /* Illustration: kept whole and centred on the panel, since it's a
+               transparent cut-out — cropping it to fill would clip the figure. */
+            <div class="frame__placeholder">
+              <span class="frame__dots dots" />
+              <img
+                class="frame__art"
+                src={url(heroArt)}
+                alt={`Illustrated avatar of ${site.name}`}
+                width="450"
+                height="612"
+              />
+            </div>
           ) : (
-            /* Placeholder panel shown until a photo is added. */
+            /* Fallback panel when neither is set. */
             <div class="frame__placeholder">
               <span class="frame__dots dots" />
               <span class="frame__monogram">{site.initials}</span>
@@ -251,10 +265,20 @@ const stats = [
     }
   }
 
-  /* Hidden on small screens: the statement and CTAs matter more than
-     decoration when vertical space is scarce. */
+  /* On phones the art stays, but smaller — it's a portrait of David, not
+     decoration, so hiding it would drop the most personal thing on the page.
+     The overlapping chips do go: at this width they crowd the figure and their
+     text is the same information the stats row already carries. */
   @media (max-width: 34.99rem) {
     .hero__art {
+      inline-size: min(100%, 14rem);
+      margin-block-start: var(--space-xs);
+    }
+
+    /* Scoped to two classes on purpose: the base `.float-chip { display: grid }`
+       rule is declared later in this file, so a bare `.float-chip` here would
+       lose on source order at equal specificity. */
+    .hero__art .float-chip {
       display: none;
     }
   }
@@ -295,6 +319,29 @@ const stats = [
     inset: 0;
     --dot-color: rgb(255 255 255 / 16%);
     --dot-gap: 16px;
+  }
+
+  /* Sits on the panel rather than filling it, inset slightly so the figure
+     never touches the frame edge.
+
+     Positioned rather than sized with percentages: the placeholder centres via
+     `place-content: center`, which sizes its grid track to its CONTENT, so a
+     percentage max-inline-size on the image would resolve against a box that
+     depends on the image itself and collapse. Insets give it a definite box. */
+  .frame__art {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    /* Percentages resolve against the placeholder's padding box, which has a
+       definite size (the frame sets aspect-ratio), so these are reliable —
+       unlike a percentage on a grid item under `place-content: center`.
+       Explicit sizes are required because `auto` on a replaced element means
+       its intrinsic size, which would overflow the panel. */
+    inline-size: 82%;
+    block-size: 88%;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 24px rgb(20 20 20 / 35%));
   }
 
   .frame__monogram {

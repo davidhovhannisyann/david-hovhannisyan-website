@@ -33,12 +33,22 @@ export const site = {
 } as const;
 
 /**
- * PHOTO SLOT — the hero and the About page both read this.
+ * LANDING HERO ART — the illustration shown in the hero frame.
  *
- * While it is `null`, they render a designed abstract panel instead. To use a
- * real photo: drop the file into `public/images/`, then set this to its path,
+ * Rendered centred on the gradient panel with object-fit: contain, so a
+ * transparent cut-out sits on the backdrop instead of being cropped to fill it.
+ * Set to `null` to fall back to the monogram panel.
+ */
+export const heroArt: string | null = '/images/art/dav-io-style.png';
+
+/**
+ * PHOTO SLOT — a real photograph, used on the About page, and taking
+ * precedence over `heroArt` in the hero if you ever set it.
+ *
+ * While it is `null`, About renders a designed placeholder panel. To use a
+ * photo: drop the file into `public/images/`, then set this to its path,
  * e.g. `'/images/david.jpg'`. A portrait crop around 900×1125 (4:5) looks best;
- * anything portrait-ish works, since the frame crops with object-fit: cover.
+ * anything portrait-ish works, since that frame crops with object-fit: cover.
  */
 export const portrait: string | null = null;
 
