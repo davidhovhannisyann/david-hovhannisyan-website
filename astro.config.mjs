@@ -16,8 +16,8 @@ import react from '@astrojs/react';
  * Every internal link goes through the `url()` helper in src/lib/url.ts, so
  * switching between the two is genuinely just an edit here — no link rewrites.
  * ------------------------------------------------------------------------- */
-const SITE = 'https://david-hovhannisyan.github.io';
-const BASE = '/';
+const SITE = 'https://davidhovhannisyann.github.io';
+const BASE = '/david-hovhannisyan-website';
 
 export default defineConfig({
   site: SITE,
