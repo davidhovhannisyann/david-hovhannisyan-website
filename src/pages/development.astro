@@ -24,17 +24,19 @@ const roleCount = `${timeline.length} ${timeline.length === 1 ? 'role' : 'roles'
 >
   <PageHeader
     eyebrow="Development"
-    title="Tools, automation<br />and side projects"
+    title="Tools, automation<br />and the things<br />built for fun"
     lead="The engineering side of the work — GPU-accelerated toolkits in C++ and CUDA, internal testing tools in Java and Kotlin, and the things built for the fun of it."
-    meta={[roleCount, 'C++ · CUDA · Java · Kotlin']}
   />
 
   <!-- Engineering roles -->
   <section class="section section--entries">
     <div class="container">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Experience</p>
-        <h2 class="h2">Where I've built it</h2>
+        <h2 class="h2">Experience</h2>
+        <ul class="chip-row">
+          <li class="chip chip--accent">{roleCount}</li>
+          <li class="chip chip--accent">C++ · CUDA · Java · Kotlin</li>
+        </ul>
       </div>
     </div>
 

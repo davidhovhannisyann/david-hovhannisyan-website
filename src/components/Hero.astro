@@ -15,7 +15,6 @@ import { url } from '../lib/url';
 /* Values are kept to short numerals so the row stays inside the copy column —
    a long text value overruns it and collides with the arc graphic. */
 const stats = [
-  { value: `${yearsExperience}+`, label: 'Years in QA & engineering' },
   { value: String(projects.length), label: 'Titles shipped' },
   { value: String(platforms.length), label: `Stores — ${platforms.join(', ')}` },
 ];
@@ -30,9 +29,9 @@ const stats = [
       <p class="eyebrow eyebrow--light">{site.role} · {site.location}</p>
 
       <h1 class="display hero__title">
-        I break games<br />
-        so players<br />
-        <span class="text-accent">don't have to</span>
+        Release quality<br />
+        for mobile<br />
+        <span class="text-accent">and PC games</span>
       </h1>
 
       <p class="hero__lead">
@@ -40,25 +39,6 @@ const stats = [
         build to the store release — test design, automation, API testing and
         the crash reports nobody else wants to read.
       </p>
-
-      <div class="hero__actions">
-        <a class="btn" href={url('/qa')}>
-          Explore my QA work
-          <svg
-            class="btn__arrow"
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            aria-hidden="true"
-          >
-            <path d="M5 12h14M13 5l7 7-7 7"></path>
-          </svg>
-        </a>
-        <a class="btn btn--ghost" href={url('/about')}>About me</a>
-      </div>
 
       <dl class="hero__stats">
         {
@@ -105,13 +85,16 @@ const stats = [
         }
       </div>
 
+      {/* One chip per section of the site. The Development chip is deliberately
+          held back until that page has more on it — restore it here when it does,
+          and add a .float-chip--c position rule in the style block below. */}
       <span class="float-chip float-chip--a">
-        <strong>Rockbite Games</strong>
-        <span>QA Engineer</span>
+        <strong>{yearsExperience}+ years</strong>
+        <span>in QA engineering</span>
       </span>
       <span class="float-chip float-chip--b">
-        <strong>{projects.length} titles</strong>
-        <span>shipped &amp; live</span>
+        <strong>600+ videos</strong>
+        <span>edited &amp; shipped</span>
       </span>
     </div>
   </div>
@@ -170,30 +153,6 @@ const stats = [
     color: rgb(255 255 255 / 88%);
   }
 
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  /* On phones the buttons stack anyway — make them match width rather than
-     sit at two different content-driven sizes. */
-  @media (max-width: 30rem) {
-    .hero__actions {
-      display: grid;
-    }
-  }
-
-  .hero__actions .btn:first-child {
-    --btn-bg: var(--c-white);
-    --btn-fg: var(--c-black);
-  }
-
-  .hero__actions .btn:first-child:hover {
-    --btn-bg: var(--c-yellow);
-    --btn-fg: var(--c-black);
-  }
-
   .hero__stats {
     display: grid;
     gap: var(--space-md) var(--space-lg);
@@ -237,8 +196,8 @@ const stats = [
 
   /* On phones the art stays, but smaller — it's a portrait of David, not
      decoration, so hiding it would drop the most personal thing on the page.
-     The overlapping chips do go: at this width they crowd the figure and their
-     text is the same information the stats row already carries. */
+     The overlapping chips do go: at this width they crowd the figure, and
+     they are garnish rather than content. */
   @media (max-width: 34.99rem) {
     .hero__art {
       inline-size: min(100%, 14rem);

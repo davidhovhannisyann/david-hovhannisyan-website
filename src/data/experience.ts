@@ -12,12 +12,20 @@ export interface Role {
   /** Optional link to the company site. */
   companyUrl?: string;
   title: string;
-  /** Human-readable period, e.g. 'January 2024 — Present'. */
-  period: string;
-  /** ISO-ish start date, used only for sorting (newest first). */
+  /**
+   * Human-readable period, e.g. 'January 2024 — Present'. Omit it and the
+   * entry simply shows no dates — ongoing, open-ended work reads better
+   * without a start date implying a stint that ended.
+   */
+  period?: string;
+  /**
+   * ISO-ish start date, used only for sorting (newest first) and for the
+   * years-of-experience figure. Never rendered, so it stays accurate even on
+   * roles that show no `period`.
+   */
   start: string;
   location: string;
-  /** True for roles with no end date — renders a live "Present" pill. */
+  /** True for roles with no end date — renders a live "Current" pill. */
   current: boolean;
   /** Logo path relative to /public, or null when there's no usable logo. */
   logo: string | null;
@@ -114,10 +122,13 @@ export const roles: Role[] = [
     id: 'freelance',
     company: 'Freelance',
     title: 'Quality Assurance Engineer',
-    period: 'December 2024 — Present',
+    // No `period` and no "Current" pill on purpose: this is continuous,
+    // open-ended work across many clients rather than one dated post, and a
+    // date range implied a single engagement. `start` below is kept because it
+    // is never rendered — only sorted on.
     start: '2024-12',
     location: 'Remote',
-    current: true,
+    current: false,
     // Most of the freelance work came through Fiverr, so its mark stands in
     // for a company logo this role doesn't have.
     logo: '/images/logos/fiverr-logo-long.png',
@@ -180,7 +191,7 @@ export const roles: Role[] = [
     id: 'ducky',
     company: 'Ducky LTD',
     companyUrl: 'https://playducky.com/',
-    title: 'Video Editor',
+    title: 'Motion Designer',
     // No calendar dates were given for this contract, so the visible period
     // states its length instead. Replace with real dates when you have them.
     period: '3–4 month contract',

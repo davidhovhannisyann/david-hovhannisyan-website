@@ -9,7 +9,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import RoleEntry from '../components/RoleEntry.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { rolesFor, yearsExperience } from '../data/experience';
+import { rolesFor } from '../data/experience';
 import { orderedProjects, projects, platforms } from '../data/projects';
 
 const timeline = rolesFor('qa');
@@ -22,21 +22,15 @@ const timeline = rolesFor('qa');
 >
   <PageHeader
     eyebrow="Quality Assurance"
-    title="Finding the bugs<br />before players do"
+    title="Quality assurance<br />for mobile<br />and PC games"
     lead="Test design, manual and automated execution, API testing and live stability monitoring across mobile and PC games — from indie one-person studios to a full production team."
-    meta={[
-      `${yearsExperience}+ years`,
-      `${timeline.length} roles`,
-      `${projects.length} shipped titles`,
-    ]}
   />
 
   <!-- Experience -->
   <section class="section section--entries">
     <div class="container">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Experience</p>
-        <h2 class="h2">Where I've done it</h2>
+        <h2 class="h2">Experience</h2>
       </div>
     </div>
 

@@ -64,13 +64,17 @@ const { role, delay = 0 } = Astro.props;
     </header>
 
     <p class="role__meta">
-      <span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="16" rx="1"></rect>
-          <path d="M3 10h18M8 3v4M16 3v4"></path>
-        </svg>
-        {role.period}
-      </span>
+      {/* Roles with no dates to show omit the whole calendar item, icon and
+          all, rather than rendering a lone icon. */}
+      {role.period && (
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="1"></rect>
+            <path d="M3 10h18M8 3v4M16 3v4"></path>
+          </svg>
+          {role.period}
+        </span>
+      )}
       <span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"></path>

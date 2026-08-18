@@ -89,7 +89,13 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
-  /* Fluid vertical rhythm between major sections */
+  /* Vertical rhythm between major sections. Asymmetric on purpose: a section
+     leads tight, so its heading sits close to whatever it follows, and trails
+     loose, so the gap doing the separating is the one below it.
+     The leading value is fixed rather than fluid — it lands where the trailing
+     clamp used to bottom out on phones, which makes the density the same at
+     every width instead of doubling on a desktop. */
+  --space-section-lead: 3.75rem;
   --space-section: clamp(3.5rem, 2rem + 6.5vw, 7.5rem);
   /* Fluid page gutter */
   --gutter: clamp(1.25rem, 0.6rem + 2.6vw, 3rem);
@@ -299,7 +305,7 @@ h4 {
 }
 
 .section {
-  padding-block: var(--space-section);
+  padding-block: var(--space-section-lead) var(--space-section);
 }
 
 .section--tight {
@@ -348,7 +354,10 @@ h4 {
 /* Section heading block: label + title + optional description */
 .section-head {
   max-inline-size: var(--maxw-prose);
-  margin-block-end: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+  /* 30px. Fixed, like --space-section-lead, and for the same reason: the old
+     clamp opened this to 56px on a desktop, which read as a gap rather than as
+     a heading attached to the content under it. */
+  margin-block-end: 1.875rem;
 }
 
 .section-head > * + * {
@@ -563,8 +572,11 @@ h4 {
   display: grid;
 }
 
+/* Leads tighter than a normal section and trails not at all: each band carries
+   its own generous padding, and the last one's diagonal would collide with
+   whatever follows. */
 .section--entries {
-  padding-block-end: 0;
+  padding-block: 2.5rem 0;
 }
 
 /* -------------------------------------------------------------- timeline -- */

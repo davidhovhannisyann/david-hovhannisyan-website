@@ -16,22 +16,17 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'Test Management',
     icon: 'clipboard',
-    items: ['TestRail', 'TestLodge'],
+    items: ['TestRail', 'TestLodge', 'Allure'],
   },
   {
     label: 'API Testing',
     icon: 'plug',
-    items: ['Postman', 'Charles Proxy'],
+    items: ['Postman', 'Charles Proxy', 'Rest API'],
   },
   {
     label: 'Monitoring & Analytics',
     icon: 'chart',
     items: ['Firebase', 'Google Play Console', 'Appsflyer'],
-  },
-  {
-    label: 'Game Engines & Frameworks',
-    icon: 'gamepad',
-    items: ['LibGDX'],
   },
   {
     label: 'Version Control',
@@ -48,6 +43,11 @@ export const skillGroups: SkillGroup[] = [
     icon: 'media',
     items: ['Adobe Premiere Pro', 'Adobe Photoshop'],
   },
+  {
+    label: 'Game Engines & Frameworks',
+    icon: 'gamepad',
+    items: ['LibGDX'],
+  }
 ];
 
 export interface Language {

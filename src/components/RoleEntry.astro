@@ -105,8 +105,11 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
         {role.current && <span class="entry__live">Current</span>}
       </h3>
       <p class="entry__role">{role.title}</p>
+      {/* A role with no `period` shows location alone — the separator rule is
+          `span + span`, so it drops out on its own rather than leaving a
+          dangling dash. */}
       <p class="entry__meta">
-        <span>{role.period}</span>
+        {role.period && <span>{role.period}</span>}
         <span>{role.location}</span>
       </p>
     </div>

@@ -37,7 +37,12 @@ export const highlights: Highlight[] = [
     body:
       'Owning release quality across Android and iOS — test design in TestRail, API testing, ' +
       'Selenium automation in Java, and crash/ANR monitoring in Firebase and Play Console.',
-    meta: [currentRole.period, `${projects.length} shipped titles`],
+    /* `period` is optional on a Role now, so it is filtered rather than
+       assumed — the chip row simply loses an item if the headline role ever
+       stops showing dates. */
+    meta: [currentRole.period, `${projects.length} shipped titles`].filter(
+      (item): item is string => Boolean(item),
+    ),
     comingSoon: false,
     cta: 'See the full history',
   },
