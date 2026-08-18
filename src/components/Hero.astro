@@ -15,7 +15,7 @@ import { url } from '../lib/url';
 /* Values are kept to short numerals so the row stays inside the copy column —
    a long text value overruns it and collides with the arc graphic. */
 const stats = [
-  { value: String(projects.length), label: 'Titles shipped' },
+  { value: '15+', label: 'Titles shipped' },
   { value: String(platforms.length), label: `Stores — ${platforms.join(', ')}` },
 ];
 ---
@@ -26,12 +26,11 @@ const stats = [
 
   <div class="container hero__inner">
     <div class="hero__copy">
-      <p class="eyebrow eyebrow--light">{site.role} · {site.location}</p>
 
       <h1 class="display hero__title">
-        Release quality<br />
-        for mobile<br />
-        <span class="text-accent">and PC games</span>
+        quality<br />
+        across mobile<br />
+        <span class="text-accent">and PC platforms</span>
       </h1>
 
       <p class="hero__lead">

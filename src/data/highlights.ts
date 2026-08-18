@@ -33,14 +33,14 @@ export const highlights: Highlight[] = [
     section: 'QA',
     href: '/qa',
     kicker: 'Currently',
-    headline: `${currentRole.title} at ${currentRole.company}`,
+    headline: 'Quality Assurance and testing',
     body:
       'Owning release quality across Android and iOS — test design in TestRail, API testing, ' +
       'Selenium automation in Java, and crash/ANR monitoring in Firebase and Play Console.',
     /* `period` is optional on a Role now, so it is filtered rather than
        assumed — the chip row simply loses an item if the headline role ever
        stops showing dates. */
-    meta: [currentRole.period, `${projects.length} shipped titles`].filter(
+    meta: [currentRole.period, '15+ shipped titles'].filter(
       (item): item is string => Boolean(item),
     ),
     comingSoon: false,
@@ -51,10 +51,10 @@ export const highlights: Highlight[] = [
     section: 'Creative',
     href: '/creative',
     kicker: 'Also doing',
-    headline: 'Video editing for game marketing',
+    headline: 'Video editing and marketing',
     body:
-      '250+ mobile ad creatives and 50+ social videos for Melon Sandbox, a title with ' +
-      'over 100M downloads — concepts, gameplay capture, hooks, voiceovers and platform cuts.',
+      '250+ mobile ad creatives made for game campaigns.' +
+      ' 300+ videos made for TikTok, Instagram and X.',
     meta: ['250+ creatives', 'Premiere Pro'],
     comingSoon: false,
     cta: 'See the work',
@@ -66,7 +66,7 @@ export const highlights: Highlight[] = [
     kicker: 'Also doing',
     headline: 'Engineering, tooling and automation',
     body:
-      'GPU-accelerated toolkits in C++, CUDA and LabVIEW at Ngene, internal mobile ' +
+      'From toolkits in C++, CUDA and LabVIEW, to building ' +
       'testing tools in Java and Kotlin, and Selenium automation frameworks.',
     meta: [`${devRoles.length} ${devRoles.length === 1 ? 'role' : 'roles'}`, 'C++ · CUDA · Java'],
     comingSoon: false,
