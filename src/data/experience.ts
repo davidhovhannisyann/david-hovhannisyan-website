@@ -31,6 +31,13 @@ export interface Role {
    */
   logoSize?: [number, number];
   /**
+   * Extra distance between the floated logo and the copy, on top of the
+   * default. For marks whose artwork runs right up to the edge of the file —
+   * the Rockbite lockup has no margin of its own — the shared gap leaves the
+   * text looking wedged against it.
+   */
+  logoGap?: string;
+  /**
    * The company's own colour, used for this entry's role title, bullet marks
    * and rules. Falls back to the page accent when unset. Keep these on the
    * site palette (`var(--c-red)` and friends) rather than sampling the logo
@@ -59,6 +66,17 @@ export interface Role {
    * default avatar.
    */
   characterScale?: number;
+  /**
+   * Lean on that image, in degrees. Negative tips it left (anticlockwise),
+   * positive right. 0 by default — a logo sitting dead straight next to a
+   * tilted company mark looks pasted on rather than placed.
+   */
+  characterTilt?: number;
+  /**
+   * Extra distance between that image and the copy, on top of the default.
+   * Art with no transparent margin of its own crowds the text without it.
+   */
+  characterGap?: string;
 }
 
 export const roles: Role[] = [
@@ -75,6 +93,9 @@ export const roles: Role[] = [
     logo: '/images/logos/rockbite-logo-long.png',
     logoAlt: 'Rockbite Games logo',
     logoSize: [348, 774],
+    // The lockup is cropped tight to the artwork, so the shared gap alone left
+    // the copy pressed against it.
+    logoGap: '1.25rem',
     brand: 'var(--c-red)',
     page: 'qa',
     discipline: 'Quality Assurance',
@@ -103,6 +124,15 @@ export const roles: Role[] = [
     logoAlt: 'Fiverr logo',
     logoSize: [1000, 1000],
     brand: 'var(--c-green)',
+    // The store most of the freelance titles shipped on. NOTE: this file is a
+    // white mark on transparency, so it only reads on a dark band — which is
+    // where this role lands as the second entry on the QA page. Move it to an
+    // odd position in this array and the logo disappears.
+    character: '/images/logos/steam.png',
+    characterSize: [1500, 1500],
+    characterScale: 1.2,
+    characterTilt: -8,
+    characterGap: '1.5rem',
     page: 'qa',
     discipline: 'Quality Assurance',
     bullets: [
@@ -112,6 +142,39 @@ export const roles: Role[] = [
       'Collaborated with design teams to help ensure a smooth, intuitive, and high-quality user experience.',
     ],
     note: 'Released titles on Steam and itch.io.',
+  },
+  // ---------------------------------------------------------------------
+  // PLACEHOLDER CONTENT — every bullet below, plus `period` and `title`, is
+  // waiting to be written. `start` is only used for sorting, and `current`
+  // is set to match the Rockbite QA role; correct both when you fill this in.
+  // ---------------------------------------------------------------------
+  {
+    id: 'rockbite-creative',
+    company: 'Rockbite Games',
+    companyUrl: 'https://rockbitegames.com',
+    title: 'Video Editor',
+    period: 'Dates to fill in',
+    start: '2024-01',
+    location: 'Yerevan, Armenia',
+    current: true,
+    logo: '/images/logos/rockbite-logo-long.png',
+    logoAlt: 'Rockbite Games logo',
+    logoSize: [348, 774],
+    logoGap: '1.25rem',
+    brand: 'var(--c-red)',
+    character: '/images/art/root-rush-guy.png',
+    characterSize: [1086, 1448],
+    // The figure only occupies the lower-left of its frame — the rest is the
+    // pile of produce — so it needs to run wider than the default to read at
+    // the same size as the other entries' art.
+    characterScale: 1.25,
+    page: 'creative',
+    discipline: 'Video Editing',
+    bullets: [
+      'Placeholder — what you produced for the ad campaigns, and for which titles.',
+      'Placeholder — one bullet per responsibility, past tense, same voice as the roles above.',
+      'Placeholder — the tools used and the platforms the creatives ran on.',
+    ],
   },
   {
     id: 'ducky',
@@ -166,6 +229,7 @@ export const roles: Role[] = [
     character: '/images/art/labview.svg',
     characterSize: [396, 407],
     characterScale: 1.2,
+    characterTilt: 8,
     page: 'development',
     discipline: 'Software Engineering',
     bullets: [

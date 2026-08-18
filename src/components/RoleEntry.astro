@@ -34,8 +34,10 @@ const flipped = index % 2 === 1;
 const character = role.character ?? avatar;
 const [charW, charH] = role.characterSize ?? [450, 612];
 const scale = role.characterScale ?? 1;
-// Mirror alternate copies so one placeholder figure doesn't look copy-pasted.
-const charFlipX = flipped ? -1 : 1;
+/* Mirror alternate copies of the FALLBACK figure, so the same placeholder
+   doesn't look copy-pasted down the page. A role's own image is never
+   mirrored: these are real marks now — a flipped Steam logo is just wrong. */
+const charFlipX = role.character ? 1 : flipped ? -1 : 1;
 
 const [logoW, logoH] = role.logoSize ?? [348, 774];
 /* A 5:1 wordmark like Ngene's floated into the logo column would be a ~26px
@@ -55,9 +57,16 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
   data-flip={flipped ? 'true' : 'false'}
   data-tone={flipped ? 'dark' : 'light'}
   data-logo={wideLogo ? 'wide' : 'tall'}
-  style={`--flip-x:${charFlipX}; --scale:${scale};${
-    role.brand ? ` --accent:${role.brand};` : ''
-  }`}
+  style={[
+    `--flip-x:${charFlipX}`,
+    `--scale:${scale}`,
+    `--char-tilt:${role.characterTilt ?? 0}deg`,
+    role.characterGap && `--char-gap:${role.characterGap}`,
+    role.logoGap && `--logo-gap:${role.logoGap}`,
+    role.brand && `--accent:${role.brand}`,
+  ]
+    .filter(Boolean)
+    .join('; ')}
 >
   <div class="entry__inner container">
     {
@@ -165,7 +174,12 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
      the figure crowds the text without ever touching a line. */
   .entry__inner {
     --char-w: calc(clamp(5rem, 9vw, 7.5rem) * var(--scale, 1));
-    --char-zone: calc(var(--char-w) + clamp(0.75rem, 1.5vw, 1.5rem));
+    /* --char-gap is the per-role top-up, for art with no transparent margin
+       of its own. It widens the reserved column, so the copy moves away from
+       the image rather than the image moving off the page edge. */
+    --char-zone: calc(
+      var(--char-w) + clamp(0.75rem, 1.5vw, 1.5rem) + var(--char-gap, 0px)
+    );
     display: flow-root;
     position: relative;
     padding-inline-end: var(--char-zone);
@@ -183,10 +197,12 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
   /* -------------------------------------------------------------- logo -- */
   /* Floated so the copy wraps beside it and then continues underneath. */
   .entry__logo {
+    /* Per-role top-up on the gap, for marks cropped tight to their artwork. */
+    --logo-space: calc(clamp(1.25rem, 3vw, 2.5rem) + var(--logo-gap, 0px));
     float: left;
     inline-size: clamp(5rem, 10vw, 8.5rem);
     block-size: auto;
-    margin-inline-end: clamp(1.25rem, 3vw, 2.5rem);
+    margin-inline-end: var(--logo-space);
     margin-block-end: clamp(0.75rem, 2vw, 1.5rem);
     object-fit: contain;
     rotate: var(--tilt);
@@ -197,7 +213,7 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
 
   .entry[data-flip='true'] .entry__logo {
     float: right;
-    margin-inline: clamp(1.25rem, 3vw, 2.5rem) 0;
+    margin-inline: var(--logo-space) 0;
   }
 
   /* Triggered by the logo itself, not the whole entry — hovering anywhere in
@@ -364,26 +380,34 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
      crowd the text without ever overlapping a line of it. */
   /* Anchored to the bottom of the content box, not past it — a negative offset
      pushes it into the band's sloped edge and the clip-path shears it off. */
+  /* rotate and scale are separate properties rather than one transform, so a
+     per-role tilt can be set without the mirroring having to know about it.
+     They compose in a fixed order — translate, rotate, scale — so the lean
+     reads in the authored direction whether or not the figure is mirrored. */
   .entry__char {
     position: absolute;
     inset-block-end: 0;
     inset-inline-end: 0;
     inline-size: var(--char-w);
     block-size: auto;
+    rotate: var(--char-tilt, 0deg);
     scale: var(--flip-x) 1;
     filter: drop-shadow(0 12px 22px rgb(20 20 20 / 20%));
-    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      rotate 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .entry[data-flip='true'] .entry__char {
     inset-inline: 0 auto;
   }
 
-  /* Same rule: the figure reacts to itself, not to the entry around it. It
-     sits in the reserved gutter, clear of any text, so accepting pointer
-     events here can't interfere with selecting the copy. */
+  /* Same rule as the logo: the figure reacts to itself, not to the entry
+     around it. It sits in the reserved gutter, clear of any text, so accepting
+     pointer events here can't interfere with selecting the copy.
+     Lifts and straightens together — the same gesture the logos make. */
   .entry__char:hover {
     translate: 0 -6px;
+    rotate: 0deg;
   }
 
   /* ------------------------------------------------------------- stack -- */
