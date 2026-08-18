@@ -6,10 +6,6 @@
  */
 
 import type { AccentKey } from './site';
-import { currentRole, rolesFor } from './experience';
-import { projects } from './projects';
-
-const devRoles = rolesFor('development');
 
 export interface Highlight {
   accent: AccentKey;
@@ -20,8 +16,6 @@ export interface Highlight {
   kicker: string;
   headline: string;
   body: string;
-  /** Short facts rendered as chips at the bottom of the card. */
-  meta: string[];
   /** Renders the muted "in progress" treatment instead of the live one. */
   comingSoon: boolean;
   cta: string;
@@ -37,12 +31,6 @@ export const highlights: Highlight[] = [
     body:
       'Owning release quality across Android and iOS — test design in TestRail, API testing, ' +
       'Selenium automation in Java, and crash/ANR monitoring in Firebase and Play Console.',
-    /* `period` is optional on a Role now, so it is filtered rather than
-       assumed — the chip row simply loses an item if the headline role ever
-       stops showing dates. */
-    meta: [currentRole.period, '15+ shipped titles'].filter(
-      (item): item is string => Boolean(item),
-    ),
     comingSoon: false,
     cta: 'See the full history',
   },
@@ -55,7 +43,6 @@ export const highlights: Highlight[] = [
     body:
       '250+ mobile ad creatives made for game campaigns.' +
       ' 300+ videos made for TikTok, Instagram and X.',
-    meta: ['250+ creatives', 'Premiere Pro'],
     comingSoon: false,
     cta: 'See the work',
   },
@@ -68,7 +55,6 @@ export const highlights: Highlight[] = [
     body:
       'From toolkits in C++, CUDA and LabVIEW, to building ' +
       'testing tools in Java and Kotlin, and Selenium automation frameworks.',
-    meta: [`${devRoles.length} ${devRoles.length === 1 ? 'role' : 'roles'}`, 'C++ · CUDA · Java'],
     comingSoon: false,
     cta: 'See the work',
   },

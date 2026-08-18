@@ -39,15 +39,15 @@ export const skillGroups: SkillGroup[] = [
     items: ['ClickUp', 'Trello'],
   },
   {
+    label: 'Game Engines & Frameworks',
+    icon: 'gamepad',
+    items: ['LibGDX'],
+  },
+  {
     label: 'Media & Design Tools',
     icon: 'media',
     items: ['Adobe Premiere Pro', 'Adobe Photoshop'],
   },
-  {
-    label: 'Game Engines & Frameworks',
-    icon: 'gamepad',
-    items: ['LibGDX'],
-  }
 ];
 
 export interface Language {
