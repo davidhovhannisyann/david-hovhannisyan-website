@@ -17,7 +17,7 @@ import react from '@astrojs/react';
  * switching between the two is genuinely just an edit here — no link rewrites.
  * ------------------------------------------------------------------------- */
 const SITE = 'https://davidhovhannisyann.github.io';
-const BASE = '/david-hovhannisyan-website';
+const BASE = '/web';
 
 export default defineConfig({
   site: SITE,
