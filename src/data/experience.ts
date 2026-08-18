@@ -113,14 +113,14 @@ export const roles: Role[] = [
     discipline: 'Quality Assurance',
     bullets: [
       'Designed, created, executed, and maintained test cases in TestRail.',
-      'Performed manual regression and sanity testing on mobile applications across Android and iOS platforms.',
+      'Performed manual testing on mobile applications across Android and iOS platforms.',
       'Monitored game performance and ANR rates using Google Play Console and Firebase, identifying issues and supporting stability improvements.',
-      'Conducted API testing using Postman and Charles Proxy.',
+      'Conducted manual and automated API testing with Rest API, Postman and Charles Proxy.',
       'Automated web application test cases using Selenium WebDriver with Java.',
       'Developed internal mobile testing tools using Java and Kotlin.',
       'Worked closely with engineering, game design, art and support teams to drive issue resolution and maintain release quality.',
     ],
-    note: 'Live mobile titles on Google Play.',
+    note: 'Live mobile titles on Google Play and Apple App Store.',
   },
   {
     id: 'freelance',
