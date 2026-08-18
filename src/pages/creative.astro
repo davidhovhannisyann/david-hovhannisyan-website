@@ -1,7 +1,7 @@
 ---
 /**
- * Creative page: video editing experience, the Melon Sandbox campaign it came
- * from, and a placeholder for the showreel that doesn't exist yet.
+ * Creative page: video editing experience and the Melon Sandbox campaign it
+ * came from.
  *
  * Experience uses the same RoleEntry bands as QA and Development. Shared for
  * now rather than by principle — if this page later grows a player or a
@@ -10,7 +10,6 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import RoleEntry from '../components/RoleEntry.astro';
-import ComingSoon from '../components/ComingSoon.astro';
 import { rolesFor } from '../data/experience';
 import { url } from '../lib/url';
 
@@ -116,18 +115,6 @@ const featured = {
       </div>
     </div>
   </section>
-
-  <ComingSoon
-    heading="The reel is still rendering"
-    blurb="The work above covers the campaign. A cut-down showreel and breakdowns of individual pieces are still being put together."
-    planned={[
-      'A short showreel of selected ad creatives',
-      'Before-and-after breakdowns of specific edits',
-      'Social-first vertical cuts for TikTok and Instagram',
-      'Thumbnail and graphic design work made in Photoshop',
-    ]}
-    tools={['Adobe Premiere Pro', 'Adobe Photoshop']}
-  />
 </Base>
 
 <style>

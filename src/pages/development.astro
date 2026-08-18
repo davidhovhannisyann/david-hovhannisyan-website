@@ -1,7 +1,6 @@
 ---
 /**
- * Development page: engineering roles, plus a placeholder for the project
- * write-ups that aren't ready yet.
+ * Development page: engineering roles.
  *
  * Experience uses the same RoleEntry bands as QA and Creative. Shared for now
  * rather than by principle — if this page later grows demos, embeds or a
@@ -10,7 +9,6 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import RoleEntry from '../components/RoleEntry.astro';
-import ComingSoon from '../components/ComingSoon.astro';
 import { rolesFor } from '../data/experience';
 
 const timeline = rolesFor('development');
@@ -45,19 +43,4 @@ const roleCount = `${timeline.length} ${timeline.length === 1 ? 'role' : 'roles'
       {timeline.map((role, i) => <RoleEntry role={role} index={i} />)}
     </ol>
   </section>
-
-  <!-- Project write-ups still to come -->
-  <div class="section--paper">
-    <ComingSoon
-      heading="Project write-ups on the way"
-      blurb="The roles above cover the professional work. The individual projects — what each one does, how it was built and what came out of it — are still being written up."
-      planned={[
-        'Internal mobile testing tools built in Java and Kotlin',
-        'Selenium WebDriver automation frameworks and page-object patterns',
-        'CuLab and NGCV — the GPU and video toolkits worked on at Ngene',
-        'Personal side projects and experiments',
-      ]}
-      tools={['Java', 'Kotlin', 'C++', 'CUDA', 'Selenium WebDriver', 'LibGDX']}
-    />
-  </div>
 </Base>
