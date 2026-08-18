@@ -105,6 +105,10 @@ export const roles: Role[] = [
     // the copy pressed against it.
     logoGap: '1.25rem',
     brand: 'var(--c-red)',
+    // Near the same proportions as the default avatar it replaces (0.76 vs
+    // 0.74) and cropped tight to the figure, so it needs no scale correction.
+    character: '/images/art/rabbit-io.png',
+    characterSize: [224, 295],
     page: 'qa',
     discipline: 'Quality Assurance',
     bullets: [
