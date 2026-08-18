@@ -31,6 +31,9 @@ interface Props {
 const { role, index } = Astro.props;
 const flipped = index % 2 === 1;
 
+/* A cluster replaces the single figure entirely — three small marks in the
+   same column rather than one image. */
+const cluster = role.characterCluster;
 const character = role.character ?? avatar;
 const [charW, charH] = role.characterSize ?? [450, 612];
 const scale = role.characterScale ?? 1;
@@ -121,16 +124,35 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
       {role.note && <p class="entry__note">{role.note}</p>}
     </div>
 
-    <img
-      class="entry__char"
-      src={url(character)}
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-      width={charW}
-      height={charH}
-    />
+    {
+      cluster ? (
+        <div class="entry__cluster" aria-hidden="true">
+          {cluster.map((mark) => (
+            <img
+              class="entry__mark-img"
+              src={url(mark.src)}
+              alt=""
+              style={`--tilt:${mark.tilt ?? 0}deg`}
+              loading="lazy"
+              decoding="async"
+              width={mark.size[0]}
+              height={mark.size[1]}
+            />
+          ))}
+        </div>
+      ) : (
+        <img
+          class="entry__char"
+          src={url(character)}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          width={charW}
+          height={charH}
+        />
+      )
+    }
   </div>
 </li>
 
@@ -139,6 +161,14 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
     --cut: clamp(1.25rem, 3.5vw, 3.5rem);
     position: relative;
     padding-block: clamp(3rem, 2rem + 4vw, 5.5rem);
+    /* The art column deliberately sits out in the page gutter, so its painted
+       edge lands on the viewport edge exactly — and sub-pixel rounding there
+       was enough to give the document a horizontal scrollbar. The overhang
+       reservations below do the real work of keeping the art in frame; this
+       just stops the last fraction of a pixel from scrolling the page.
+       `clip` rather than `hidden`: no scroll container, no effect on the
+       vertical axis, which the dark bands' negative margins rely on. */
+    overflow-x: clip;
 
     /* An entry with its own brand colour sets --accent inline, so the deepened
        companion has to be re-derived here — global.css computes it from the
@@ -180,8 +210,23 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
     /* --char-gap is the per-role top-up, for art with no transparent margin
        of its own. It widens the reserved column, so the copy moves away from
        the image rather than the image moving off the page edge. */
+    /* Rotating the art widens its PAINTED box well beyond its layout box: a
+       192px square at 36deg paints 268px. Left unreserved, that extra ran
+       under the copy on one side and off the page on the other — a sideways
+       scrollbar between roughly 770px and 1100px wide.
+       Derived from the tilt rather than hand-tuned, so changing --char-tilt
+       can't quietly reintroduce it. max(sin, -sin) stands in for abs(), which
+       is younger than the trig functions. Resolves to 0px at 0deg. */
+    --art-overhang: calc(
+      var(--char-w) *
+        (
+          cos(var(--char-tilt, 0deg)) +
+            max(sin(var(--char-tilt, 0deg)), -1 * sin(var(--char-tilt, 0deg))) - 1
+        ) / 2
+    );
     --char-zone: calc(
-      var(--char-w) + clamp(0.75rem, 1.5vw, 1.5rem) + var(--char-gap, 0px)
+      var(--char-w) + clamp(0.75rem, 1.5vw, 1.5rem) + var(--char-gap, 0px) +
+        2 * var(--art-overhang)
     );
     display: flow-root;
     position: relative;
@@ -200,10 +245,19 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
   /* -------------------------------------------------------------- logo -- */
   /* Floated so the copy wraps beside it and then continues underneath. */
   .entry__logo {
+    --logo-w: clamp(5rem, 10vw, 8.5rem);
     /* Per-role top-up on the gap, for marks cropped tight to their artwork. */
     --logo-space: calc(clamp(1.25rem, 3vw, 2.5rem) + var(--logo-gap, 0px));
+    /* Same rotation maths as --art-overhang. A 3deg lean is small, but on a
+       flipped entry the logo floats against the container's outer edge, so
+       even 2.6px of surplus hung off the page and gave the whole document a
+       horizontal scrollbar between roughly 780px and 900px wide. */
+    --logo-overhang: calc(
+      var(--logo-w) *
+        (cos(var(--tilt)) + max(sin(var(--tilt)), -1 * sin(var(--tilt))) - 1) / 2
+    );
     float: left;
-    inline-size: clamp(5rem, 10vw, 8.5rem);
+    inline-size: var(--logo-w);
     block-size: auto;
     margin-inline-end: var(--logo-space);
     margin-block-end: clamp(0.75rem, 2vw, 1.5rem);
@@ -216,7 +270,7 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
 
   .entry[data-flip='true'] .entry__logo {
     float: right;
-    margin-inline: var(--logo-space) 0;
+    margin-inline: var(--logo-space) var(--logo-overhang);
   }
 
   /* Triggered by the logo itself, not the whole entry — hovering anywhere in
@@ -387,11 +441,20 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
      per-role tilt can be set without the mirroring having to know about it.
      They compose in a fixed order — translate, rotate, scale — so the lean
      reads in the authored direction whether or not the figure is mirrored. */
-  .entry__char {
+  /* One figure or a cluster of marks — either way it occupies the same
+     reserved column, anchored to the band's bottom outer corner. */
+  .entry__char,
+  .entry__cluster {
     position: absolute;
     inset-block-end: 0;
-    inset-inline-end: 0;
+    /* Pulled in by the overhang so the ROTATED edge sits flush with the
+       container, rather than the un-rotated one sitting flush and the
+       rotated corner hanging off the page. */
+    inset-inline-end: var(--art-overhang);
     inline-size: var(--char-w);
+  }
+
+  .entry__char {
     block-size: auto;
     rotate: var(--char-tilt, 0deg);
     scale: var(--flip-x) 1;
@@ -400,8 +463,55 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
       rotate 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .entry[data-flip='true'] .entry__char {
-    inset-inline: 0 auto;
+  .entry[data-flip='true'] .entry__char,
+  .entry[data-flip='true'] .entry__cluster {
+    inset-inline: var(--art-overhang) auto;
+  }
+
+  /* Triangle: two marks across the top, the third centred beneath them. Three
+     square logos this way stand about as tall as the single figure they
+     replace, instead of running down the band as a column. */
+  .entry__cluster {
+    /* Has to clear the rotation, not just the boxes: tilting a mark by 8deg
+       widens its footprint by about 13% of its own width, so roughly 11px of
+       any gap is eaten before the marks are visibly apart at all.
+
+       Flat rather than fluid, unlike most spacing here. The cluster is within
+       a few percent of the same width at every breakpoint — it is capped by
+       its own clamp, not by the viewport — so a vw-scaled gap only bottomed
+       out on phones and put the marks back to touching. */
+    --cluster-gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--cluster-gap);
+    justify-items: center;
+    /* The group's own lean, on top of each mark's. They compound — a mark at
+       -8 inside a cluster at +6 reads as -2 — which is the point: the trio
+       tilts as one object rather than three that happen to agree. Rotates
+       about its centre, so it stays in its slot instead of swinging out of it. */
+    rotate: var(--char-tilt, 0deg);
+  }
+
+  .entry__mark-img {
+    inline-size: 100%;
+    block-size: auto;
+    rotate: var(--tilt, 0deg);
+    filter: drop-shadow(0 8px 16px rgb(20 20 20 / 22%));
+    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      rotate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Spans both columns but is sized to one, so it centres under the pair
+     rather than sitting wider than either of them. */
+  .entry__mark-img:nth-child(3) {
+    grid-column: 1 / -1;
+    inline-size: calc(50% - var(--cluster-gap) / 2);
+  }
+
+  /* Each mark answers for itself, like the logos and the figure do. */
+  .entry__mark-img:hover {
+    translate: 0 -5px;
+    rotate: 0deg;
   }
 
   /* Same rule as the logo: the figure reacts to itself, not to the entry
@@ -441,11 +551,15 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
       inline-size: clamp(8rem, 46vw, 12rem);
     }
 
-    .entry__char {
+    .entry__char,
+    .entry__cluster {
       position: static;
-      display: block;
       inline-size: calc(clamp(5.5rem, 30vw, 8rem) * var(--scale));
       margin: clamp(1.25rem, 4vw, 2rem) auto 0;
+    }
+
+    .entry__char {
+      display: block;
     }
   }
 </style>

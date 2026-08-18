@@ -75,9 +75,12 @@ export interface Role {
    */
   characterScale?: number;
   /**
-   * Lean on that image, in degrees. Negative tips it left (anticlockwise),
+   * Lean on the art, in degrees. Negative tips it left (anticlockwise),
    * positive right. 0 by default — a logo sitting dead straight next to a
    * tilted company mark looks pasted on rather than placed.
+   *
+   * Applies to `characterCluster` too, where it leans the whole group. That
+   * compounds with each mark's own `tilt` rather than replacing it.
    */
   characterTilt?: number;
   /**
@@ -85,6 +88,23 @@ export interface Role {
    * Art with no transparent margin of its own crowds the text without it.
    */
   characterGap?: string;
+  /**
+   * Alternative to `character`: several small marks instead of one figure,
+   * laid out as a triangle in the same column — two across the top, one
+   * centred beneath. Takes precedence over `character` when set.
+   *
+   * Each mark carries its own `tilt` so the group reads as hand-placed rather
+   * than as a grid. `characterScale` still sizes the whole cluster; a cluster
+   * wants a larger one than a single figure, since it is splitting that width
+   * between two columns.
+   */
+  characterCluster?: Array<{
+    src: string;
+    /** Intrinsic pixel size, `[width, height]`. */
+    size: [number, number];
+    /** Lean in degrees. Negative tips left, positive right. */
+    tilt?: number;
+  }>;
 }
 
 export const roles: Role[] = [
@@ -158,37 +178,43 @@ export const roles: Role[] = [
     ],
     note: 'Released titles on Steam and itch.io.',
   },
-  // ---------------------------------------------------------------------
-  // PLACEHOLDER CONTENT — every bullet below, plus `period` and `title`, is
-  // waiting to be written. `start` is only used for sorting, and `current`
-  // is set to match the Rockbite QA role; correct both when you fill this in.
-  // ---------------------------------------------------------------------
   {
-    id: 'rockbite-creative',
-    company: 'Rockbite Games',
-    companyUrl: 'https://rockbitegames.com',
+    id: 'freelance-creative',
+    company: 'Freelance',
     title: 'Video Editor',
-    period: '',
-    start: '2024-01',
-    location: 'Yerevan, Armenia',
+    // Same treatment as the Freelance QA entry: continuous, open-ended work
+    // across many clients rather than one dated post, so no period and no
+    // "Current" pill. `start` is never rendered — only sorted on.
+    start: '2024-12',
+    location: 'Remote',
     current: false,
-    logo: '/images/logos/rockbite-logo-long.png',
-    logoAlt: 'Rockbite Games logo',
-    logoSize: [348, 774],
-    logoGap: '1.25rem',
-    brand: 'var(--c-red)',
-    character: '/images/art/root-rush-guy.png',
-    characterSize: [1086, 1448],
-    // The figure only occupies the lower-left of its frame — the rest is the
-    // pile of produce — so it needs to run wider than the default to read at
-    // the same size as the other entries' art.
-    characterScale: 1.25,
+    logo: '/images/logos/fiverr-logo-long.png',
+    logoAlt: 'Fiverr logo',
+    logoSize: [1000, 1000],
+    brand: 'var(--c-green)',
+    // The channels the work ran on, in place of a single figure. Two lean one
+    // way and one the other, so the group doesn't read as a tidy grid.
+    characterCluster: [
+      { src: '/images/logos/instagram-logo.png', size: [730, 730], tilt: -8 },
+      { src: '/images/logos/tiktok-logo.png', size: [800, 800], tilt: 8 },
+      { src: '/images/logos/x-logo.png', size: [512, 512], tilt: -8 },
+    ],
+    // Leans the trio as a group, on top of the per-mark tilts above. The
+    // column widens itself to absorb the rotation, so this can be changed
+    // freely without the marks running into the copy.
+    characterTilt: 13,
+    // Wider than a single figure would be: the cluster splits this width
+    // across two columns AND the gap between them, so each mark is somewhat
+    // under half of it. Raised alongside the gap so the extra spacing comes
+    // out of the column rather than out of the marks.
+    characterScale: 1.6,
     page: 'creative',
     discipline: 'Video Editing',
     bullets: [
-      'Created mobile game ad creatives for titles like Repopulation, Root Rush, Idle Marble Breaker and more.',
-      'Worked closely with the marketing team on new creative directions, campaign requirements and a high volume of platform-ready output.',
-      'Adapted every creative to the format requirements of each advertising platform.',
+      'Created social media content for a variety of projects across Instagram, TikTok, and X.',
+      'The work ranged from polished launch videos to short-form reels, memes, and whatever else made the most' +
+      ' sense for the project and its marketing - always adapted to the platform instead of recycling the same video everywhere.',
+      'Placeholder — the platforms the work was cut for, and the tools used.',
     ],
   },
   {
@@ -225,6 +251,34 @@ export const roles: Role[] = [
       'Worked closely with the marketing team on new creative directions, campaign requirements and a high volume of platform-ready output.',
     ],
     note: 'Melon Sandbox — 100M+ downloads on Google Play.',
+  },
+  {
+    id: 'rockbite-creative',
+    company: 'Rockbite Games',
+    companyUrl: 'https://rockbitegames.com',
+    title: 'Video Editor',
+    period: '',
+    start: '2024-01',
+    location: 'Yerevan, Armenia',
+    current: false,
+    logo: '/images/logos/rockbite-logo-long.png',
+    logoAlt: 'Rockbite Games logo',
+    logoSize: [348, 774],
+    logoGap: '1.25rem',
+    brand: 'var(--c-red)',
+    character: '/images/art/root-rush-guy.png',
+    characterSize: [1086, 1448],
+    // The figure only occupies the lower-left of its frame — the rest is the
+    // pile of produce — so it needs to run wider than the default to read at
+    // the same size as the other entries' art.
+    characterScale: 1.25,
+    page: 'creative',
+    discipline: 'Video Editing',
+    bullets: [
+      'Created mobile game ad creatives for titles like Repopulation, Root Rush, Idle Marble Breaker and more.',
+      'Worked closely with the marketing team on new creative directions, campaign requirements and a high volume of platform-ready output.',
+      'Adapted every creative to the format requirements of each advertising platform.',
+    ],
   },
   {
     id: 'ngene',
