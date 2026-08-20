@@ -21,7 +21,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'API Testing',
     icon: 'plug',
-    items: ['Postman', 'Charles Proxy', 'Rest API'],
+    items: ['Postman', 'Charles Proxy', 'Rest assured'],
   },
   {
     label: 'Monitoring & Analytics',
