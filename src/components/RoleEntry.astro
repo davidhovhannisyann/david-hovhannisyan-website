@@ -234,8 +234,12 @@ const logoTilt = wideLogo ? 0 : flipped ? 3 : -3;
     /* The measure is this width minus the logo and the character column, so
        widening here is what lengthens the lines. Capping the text in `ch`
        instead only bound one side, which left the character 126px adrift on
-       unflipped entries and 19px away on flipped ones. */
-    max-inline-size: min(100%, 64rem);
+       unflipped entries and 19px away on flipped ones.
+       72.3rem, up from 64: the logo and art columns are fixed widths, so every
+       rem added here lands entirely on the bullet text. 64 -> 70 bought ~15%
+       more measure, 70 -> 72.3 another ~5%; together about 67 characters per
+       line to 81. Stays under .container's own 1200px cap. */
+    max-inline-size: min(100%, 72.3rem);
   }
 
   .entry[data-flip='true'] .entry__inner {
