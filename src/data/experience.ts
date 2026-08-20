@@ -134,7 +134,9 @@ export const roles: Role[] = [
     bullets: [
       'Designed, created, executed, and maintained test cases in TestRail.',
       'Performed manual testing on mobile applications across Android and iOS platforms.',
+      'Used LLM(Claude Code, OpenAI Codex) to investigate defects, implement bug fixes and verify solutions.',
       'Monitored game performance and ANR rates using Google Play Console and Firebase, identifying issues and supporting stability improvements.',
+      'Mentored QA interns by introducing testing methodologies, reviewing bug reports, and supporting their onboarding and daily activities.',
       'Conducted manual and automated API testing with Rest API, Postman and Charles Proxy.',
       'Automated web application test cases using Selenium WebDriver with Java.',
       'Developed internal mobile testing tools using Java and Kotlin.',
@@ -214,7 +216,6 @@ export const roles: Role[] = [
       'Created social media content for a variety of projects across Instagram, TikTok, and X.',
       'The work ranged from polished launch videos to short-form reels, memes, and whatever else made the most' +
       ' sense for the project and its marketing - always adapted to the platform instead of recycling the same video everywhere.',
-      'Placeholder — the platforms the work was cut for, and the tools used.',
     ],
   },
   {
